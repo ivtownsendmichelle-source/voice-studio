@@ -29,8 +29,8 @@
   h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 600; line-height: 1.25; margin-bottom: 12px; color: var(--accent); }
   p.body { font-size: 0.95rem; line-height: 1.7; color: #3a3028; margin-bottom: 16px; }
   label { display: block; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; margin-top: 20px; }
-  input[type="text"], input[type="email"], textarea { width: 100%; background: white; border: 1px solid var(--rule); border-radius: 4px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--ink); outline: none; transition: border-color 0.2s; }
-  input[type="text"]:focus, input[type="email"]:focus, textarea:focus { border-color: var(--accent); }
+  input[type="text"], input[type="email"], textarea, select { width: 100%; background: white; border: 1px solid var(--rule); border-radius: 4px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--ink); outline: none; transition: border-color 0.2s; }
+  input[type="text"]:focus, input[type="email"]:focus, textarea:focus, select:focus { border-color: var(--accent); }
   textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
   .callout { background: rgba(27,58,45,0.06); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 0 4px 4px 0; margin: 16px 0 20px; font-size: 0.88rem; line-height: 1.7; color: #3a3028; }
 
@@ -71,19 +71,20 @@
   .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-style: italic; font-size: 0.9rem; border: 1px dashed var(--rule); border-radius: 6px; margin-bottom: 20px; }
   .sample-entry-box { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 20px; margin-bottom: 20px; }
 
-  /* Level slider */
-  .level-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
-  .level-number { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1; color: var(--accent); }
-  .level-desc-text { font-size: 0.9rem; color: var(--muted); font-style: italic; }
-  input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: var(--rule); border-radius: 2px; outline: none; margin: 12px 0; }
-  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; transition: transform 0.1s; }
-  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-  .level-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+  /* Numbers input grid */
+  .numbers-grid { width: 100%; }
+  .numbers-row { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 12px; align-items: start; }
+  .numbers-row input { width: 100%; }
+  .numbers-row label { margin: 0; font-size: 0.78rem; }
+  .numbers-progress { margin-top: 16px; padding: 12px; background: rgba(27,58,45,0.06); border-radius: 4px; font-size: 0.85rem; color: var(--muted); }
+  .numbers-progress.ready { background: rgba(200,168,80,0.1); color: var(--accent); }
 
-  /* Level definition accordion extras */
-  .level-sample-readonly { background: #faf7f2; border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; margin-bottom: 8px; font-size: 0.85rem; line-height: 1.6; color: var(--ink); white-space: pre-wrap; }
-  .level-sample-readonly-meta { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-  .level-illustrative { font-size: 0.85rem; font-style: italic; color: var(--rule); margin-bottom: 12px; padding: 8px 12px; border-left: 2px solid var(--rule); }
+  /* Read-only Numbers display */
+  .numbers-display { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+  .number-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 0.92rem; }
+  .number-item:last-child { border-bottom: none; }
+  .number-label { font-weight: 500; color: var(--accent); }
+  .number-context { color: var(--muted); font-size: 0.9rem; }
 
   /* Buttons */
   .btn { display: inline-block; padding: 12px 28px; border-radius: 4px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
@@ -93,16 +94,23 @@
   .btn-secondary:hover { background: rgba(27,58,45,0.07); }
   .btn-ghost { background: transparent; color: var(--muted); padding: 12px 0; font-size: 0.85rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
   .btn-ghost:hover { color: var(--ink); }
-  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 28px; flex-wrap: wrap; }
+  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 28px; flex-wrap: wrap; justify-content: space-between; }
 
   /* Inline errors */
   .inline-error { color: var(--error); font-size: 0.82rem; margin-top: 8px; display: none; }
   .inline-error.visible { display: block; }
 
-  /* Thank you */
+  /* Thank you / outputs */
   .thankyou-box { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 32px; font-size: 0.95rem; line-height: 1.8; color: var(--ink); }
+  .output-section { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 24px; margin-bottom: 24px; }
+  .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .output-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 600; color: var(--accent); }
+  .copy-btn { padding: 8px 16px; font-size: 0.85rem; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+  .copy-btn:hover { background: var(--accent-hover); }
+  .copy-btn.copied { background: var(--gold); }
+  .output-content { background: #faf7f2; border: 1px solid var(--rule); border-radius: 4px; padding: 16px; font-family: 'DM Mono', monospace; font-size: 0.75rem; line-height: 1.6; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
 
-  @media (max-width: 500px) { .wordmark { font-size: 2rem; } h2 { font-size: 1.3rem; } .level-number { font-size: 2.2rem; } }
+  @media (max-width: 500px) { .wordmark { font-size: 2rem; } h2 { font-size: 1.3rem; } .btn-row { flex-direction: column-reverse; } }
 </style>
 </head>
 <body>
@@ -114,7 +122,10 @@
   <input type="email" name="client-email" />
   <input type="text" name="use-case" />
   <textarea name="voice-profile"></textarea>
-  <textarea name="system-prompt"></textarea>
+  <textarea name="voice-profile-markdown"></textarea>
+  <textarea name="numbers"></textarea>
+  <textarea name="bad-output-examples"></textarea>
+  <textarea name="personal-characteristics"></textarea>
   <input type="text" name="bot-field" />
 </form>
 
@@ -128,17 +139,17 @@
     <div class="step-label">Introduction</div>
     <h2>What is Voice Studio?</h2>
     <p class="body">Voice Studio is a voice profile. A complete reference for how you write at every level of formality, built from your real writing.</p>
-    <p class="body">Your writing changes depending on who you're talking to. A funder email reads differently than a board memo. A client thank-you reads differently than a vendor request. An Instagram caption reads differently than a LinkedIn post. Voice Studio captures that range. You define what each level of formality means for you. You describe how each format works.</p>
-    <p class="body">When you finish, you'll have a complete voice profile on file. I review every submission personally and follow up within 72 hours.</p>
-    <p class="body">This walks you through it in five steps. There are no wrong answers. The more honest your samples, the better it works.</p>
+    <p class="body">Your writing changes depending on who you are talking to. A funder email reads differently than a board memo. A client thank-you reads differently than a vendor request. An Instagram caption reads differently than a LinkedIn post. Voice Studio captures that range. You define what each level of formality means for you. You describe how each format works.</p>
+    <p class="body">When you finish, you will have a complete voice profile ready to share with AI writing assistants. You get two versions: one for direct paste into AI projects, and one XML file for system integrations.</p>
+    <p class="body">This walks you through it in nine steps. There are no wrong answers. The more honest your samples, the better it works.</p>
     <div class="btn-row">
-      <button class="btn btn-primary" onclick="goTo(2)">Let's build it</button>
+      <button class="btn btn-primary" onclick="goTo(2)">Let us build it</button>
     </div>
   </div>
 
   <!-- PAGE 2: IDENTIFICATION + USE CASE -->
   <div class="step" id="step-2">
-    <div class="step-label">Step 1 of 5</div>
+    <div class="step-label">Step 1 of 9</div>
     <h2>First, who are we building this for?</h2>
     <label>Name</label>
     <input type="text" id="clientName" />
@@ -170,9 +181,9 @@
 
   <!-- PAGE 3: WRITING CATEGORIES -->
   <div class="step" id="step-3">
-    <div class="step-label">Step 2 of 5</div>
+    <div class="step-label">Step 2 of 9</div>
     <h2>What kinds of writing do you need help with?</h2>
-    <p class="body">Pick everything that applies. Add your own if something isn't listed.</p>
+    <p class="body">Pick everything that applies. Add your own if something is not listed.</p>
     <div id="categoriesContainer"></div>
     <div class="custom-add-row">
       <input type="text" id="customTypeInput" placeholder="Add your own..." onkeydown="if(event.key==='Enter')addCustomType()" />
@@ -187,7 +198,7 @@
 
   <!-- PAGE 4: FORMAT LIBRARY -->
   <div class="step" id="step-4">
-    <div class="step-label">Step 3 of 5</div>
+    <div class="step-label">Step 3 of 9</div>
     <h2>How do you write each one?</h2>
     <p class="body">For each type of writing you selected, describe how you structure it. How it opens, what goes in the middle, how it closes, how long it usually is. Open the ones you want to fill. Leave the rest closed.</p>
     <div class="callout">
@@ -202,12 +213,33 @@
     </div>
   </div>
 
-  <!-- PAGE 5: SAMPLE COLLECTION -->
+  <!-- PAGE 5: DEFINE YOUR NUMBERS -->
   <div class="step" id="step-5">
-    <div class="step-label">Step 4 of 5</div>
+    <div class="step-label">Step 4 of 9</div>
+    <h2>Define your Numbers.</h2>
+    <p class="body">You will not use 1-10 formality levels. Instead, you define what each number means to you. What context label is important to you? "Professional with a friend" or "corporate heavy" or "casual but clear"? You pick the labels. Fill in at least 5.</p>
+    <p class="body">Example: 1 = Texting my best friend, 3 = Email to a client, 5 = Board meeting, 7 = Formal grant, 9 = Legal document.</p>
+    <div class="numbers-grid">
+      <div class="numbers-row">
+        <div><label style="margin-top: 0;">Number</label></div>
+        <div><label style="margin-top: 0;">Your context for this number</label></div>
+      </div>
+      <div id="numbersInputContainer"></div>
+    </div>
+    <div class="numbers-progress" id="numbersProgress">Fill in at least 5 numbers to continue.</div>
+    <div class="inline-error" id="error-page5" role="alert" aria-live="polite">You must define at least 5 Numbers before continuing.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(4)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndGo(5, 6)">Next</button>
+    </div>
+  </div>
+
+  <!-- PAGE 6: SAMPLE COLLECTION -->
+  <div class="step" id="step-6">
+    <div class="step-label">Step 5 of 9</div>
     <h2>Now paste in your samples.</h2>
-    <p class="body">Find something you actually wrote. A text, an email, a post. Copy it and paste it here. Then tell us what it was, who it was for, and what level it feels like.</p>
-    <p class="body">Add as many as you want. Three samples at any level you actually use is a good target. The more you add, the better this works.</p>
+    <p class="body">Find something you actually wrote. A text, an email, a post. Copy it and paste it here. Then tell us what it was, who it was for, and which Number it matches.</p>
+    <p class="body">Add as many as you want. Three samples at any Number you actually use is a good target. The more you add, the better this works.</p>
     <div id="samplesList"></div>
     <div class="sample-entry-box">
       <label>Paste your sample here</label>
@@ -216,69 +248,93 @@
       <input type="text" id="sampleContext" placeholder="e.g. Email to my landlord, text to my sister, Facebook post about the farm..." />
       <label>Who were you writing to?</label>
       <input type="text" id="sampleRecipient" placeholder="e.g. My business partner, a new customer, my mom..." />
-      <label>What level does this feel like?</label>
-      <div class="level-display">
-        <div class="level-number" id="sliderNum">5</div>
-        <div class="level-desc-text" id="sliderDesc">Standard professional.</div>
-      </div>
-      <input type="range" min="1" max="10" value="5" id="levelSlider" oninput="updateSlider()" />
-      <div class="level-labels"><span>1. Most casual</span><span id="sliderMaxLabel">10. Most formal</span></div>
+      <label>Which Number does this match?</label>
+      <select id="numberDropdown">
+        <option value="">Select a Number</option>
+      </select>
       <div class="btn-row">
         <button class="btn btn-ghost" onclick="clearSampleForm()">Clear</button>
         <button class="btn btn-primary" onclick="addSample()">Add this sample</button>
       </div>
     </div>
-    <div class="inline-error" id="error-page5" role="alert" aria-live="polite">Add at least one sample to continue.</div>
+    <div class="inline-error" id="error-page6" role="alert" aria-live="polite">Add at least one sample to continue.</div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="saveFormatDefs(); goTo(4)">Back</button>
-      <button class="btn btn-primary" onclick="validateAndGo(5, 6)">I'm done adding samples. Next.</button>
+      <button class="btn btn-ghost" onclick="saveFormatDefs(); goTo(5)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndGo(6, 7)">I am done adding samples. Next.</button>
     </div>
   </div>
 
-  <!-- PAGE 6: LEVEL DEFINITIONS -->
-  <div class="step" id="step-6">
-    <div class="step-label">Step 5 of 5</div>
-    <h2>Describe the levels you used.</h2>
-    <p class="body">Look at your samples for each level. Tell us in your own words what makes each one distinct.</p>
-    <div id="levelDefsContainer"></div>
-    <div class="inline-error" id="error-page6" role="alert" aria-live="polite">Please describe every level shown before submitting.</div>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="goTo(5)">Back</button>
-      <button class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
-      <!-- DEBUG: Remove before production -->
-      <button class="btn btn-secondary" onclick="debugPreview()" style="border-color: var(--error); color: var(--error);">Debug: Preview Output</button>
-    </div>
-  </div>
-
-  <!-- DEBUG: Remove this entire modal before production -->
-  <div id="debugModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; overflow-y:auto; padding:24px;" onclick="if(event.target===this)this.style.display='none'">
-    <div style="max-width:800px; margin:0 auto; background:white; border-radius:8px; padding:28px; position:relative;">
-      <button onclick="document.getElementById('debugModal').style.display='none'" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.4rem; cursor:pointer; color:#999;">&times;</button>
-      <h3 style="font-family:'Playfair Display',serif; color:var(--error); margin-bottom:4px;">DEBUG OUTPUT</h3>
-      <p style="font-size:0.75rem; color:var(--error); margin-bottom:20px;">Remove this modal and the debug button before production deploy.</p>
-      <div style="margin-bottom:20px;">
-        <div style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;">Voice Profile (human-readable)</div>
-        <pre id="debugProfile" style="background:#f8f6f2; border:1px solid var(--rule); border-radius:4px; padding:16px; font-size:0.75rem; line-height:1.7; white-space:pre-wrap; word-break:break-word; max-height:400px; overflow-y:auto;"></pre>
-      </div>
-      <div>
-        <div style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;">System Prompt (XML)</div>
-        <pre id="debugPrompt" style="background:#f8f6f2; border:1px solid var(--rule); border-radius:4px; padding:16px; font-size:0.75rem; line-height:1.7; white-space:pre-wrap; word-break:break-word; max-height:400px; overflow-y:auto;"></pre>
-      </div>
-    </div>
-  </div>
-
-  <!-- PAGE 7: THANK YOU -->
+  <!-- PAGE 7: BAD OUTPUT EXAMPLES -->
   <div class="step" id="step-7">
+    <div class="step-label">Step 6 of 9</div>
+    <h2>Show us what you do NOT want.</h2>
+    <p class="body">Check the pre-written examples that would never sound like you. Then add three or more of your own examples of writing that would be completely wrong for your voice.</p>
+    <div id="badExamplesContainer"></div>
+    <p class="body" style="margin-top: 20px; font-weight: 500;">Add your own bad examples</p>
+    <div class="custom-add-row">
+      <input type="text" id="customBadInput" placeholder="Type a phrase or sentence you would never write..." onkeydown="if(event.key==='Enter')addCustomBadExample()" />
+      <button onclick="addCustomBadExample()">+ Add</button>
+    </div>
+    <div class="custom-items" id="customBadList"></div>
+    <div class="inline-error" id="error-page7" role="alert" aria-live="polite">Add at least three custom bad examples to continue.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(6)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndGo(7, 8)">Next</button>
+    </div>
+  </div>
+
+  <!-- PAGE 8: PERSONAL CHARACTERISTICS -->
+  <div class="step" id="step-8">
+    <div class="step-label">Step 7 of 9</div>
+    <h2>What makes you unique?</h2>
+    <p class="body">Answer these eight questions. Your answers help AI understand your specific voice beyond just formality levels.</p>
+    <div id="characteristicsContainer"></div>
+    <div class="inline-error" id="error-page8" role="alert" aria-live="polite">Please answer all eight questions before continuing.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(7)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndGo(8, 9)">Next</button>
+    </div>
+  </div>
+
+  <!-- PAGE 9: NUMBER DEFINITIONS (Read-only review) -->
+  <div class="step" id="step-9">
+    <div class="step-label">Step 8 of 9</div>
+    <h2>Review your Numbers and add context.</h2>
+    <p class="body">You can now optionally add more detail about each Number. What audience? What tone? What words do you avoid at this level?</p>
+    <div id="numberDefsContainer"></div>
+    <div class="inline-error" id="error-page9" role="alert" aria-live="polite">Please describe every Number shown before submitting.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(8)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndSubmit()">Review and Submit</button>
+    </div>
+  </div>
+
+  <!-- PAGE 10: THANK YOU / OUTPUTS -->
+  <div class="step" id="step-10">
     <div class="step-label">Submission received</div>
     <div class="thankyou-box">
-      Thank you. Your responses are in my inbox. I'll read through them personally and reach out within 72 hours. If you want to give me a head start, hit reply on the confirmation email and tell me what brought you here.
+      Thank you. Your voice profile is ready. You can copy the files below and use them immediately. I will also read through your submission and email you within 2 business days with any follow-up questions.
+    </div>
+    <div class="output-section">
+      <div class="output-header">
+        <span class="output-title">Voice Profile (Markdown)</span>
+        <button class="copy-btn" onclick="copyToClipboard('output-markdown', this)">Copy</button>
+      </div>
+      <div class="output-content" id="output-markdown"></div>
+    </div>
+    <div class="output-section">
+      <div class="output-header">
+        <span class="output-title">Voice Profile (XML)</span>
+        <button class="copy-btn" onclick="copyToClipboard('output-xml', this)">Copy</button>
+      </div>
+      <div class="output-content" id="output-xml"></div>
     </div>
   </div>
 
 </div>
 
 <script>
-const TOTAL = 7;
+const TOTAL = 10;
 
 const CATEGORIES = {
   'Client and customer writing': [
@@ -311,31 +367,31 @@ const CATEGORY_VISIBILITY = {
   both: Object.keys(CATEGORIES)
 };
 
-const SLIDER_HINTS = {
-  1: 'Closest people. No filter.',
-  2: 'Casual. Someone you know.',
-  3: 'Friendly with a purpose.',
-  4: 'Warm and professional.',
-  5: 'Standard professional.',
-  6: 'More formal. Business context.',
-  7: 'Making a case or a pitch.',
-  8: 'Formal presentations or reports.',
-  9: 'Grants, official submissions.',
-  10: 'Legal or institutional.'
-};
+const BAD_OUTPUT_EXAMPLES = [
+  'I hope this finds you well',
+  'I would be delighted to assist you',
+  'Please allow me to elucidate',
+  'Cutting-edge solutions for your business',
+  'We are passionate about helping you succeed',
+  'Synergistic approach to maximize your potential',
+  'This represents a paradigm shift in our industry',
+  'We are thrilled to announce',
+  'At the end of the day',
+  'Needless to say',
+  'As a matter of fact',
+  'It goes without saying'
+];
 
-const ILLUSTRATIVE_EXAMPLES = {
-  1: 'Running late, see you in 10',
-  2: 'Thanks for stopping by yesterday. Good to catch up.',
-  3: 'Hey hope your week is going well. Quick question on the meeting Friday.',
-  4: 'Sarah, hope you\'ve been getting some rest after the launch. I wanted to circle back on what we discussed.',
-  5: 'David, thanks for reaching out. I appreciate you considering me for this. Here\'s what I can offer.',
-  6: 'Linda, I want to acknowledge the concerns raised in your last email. Let me address each one directly.',
-  7: 'Thank you for sharing your perspective on this issue. I\'d like to offer some additional context that may be relevant.',
-  8: 'It appears that there is broad agreement on the core proposal. Several members have raised valid concerns about implementation.',
-  9: 'The organization has demonstrated measurable impact across three program areas during the reporting period.',
-  10: 'This agreement is entered into as of the date specified below by and between the parties identified herein.'
-};
+const PERSONAL_CHARACTERISTICS_QUESTIONS = [
+  'What is your biggest pet peeve in business writing?',
+  'What word or phrase do you use a lot that feels true to how you talk?',
+  'What tone would annoy you if an AI used it?',
+  'How do you feel about exclamation marks?',
+  'What is your relationship to brevity? Do you prefer short or long sentences?',
+  'Do you use humor in your writing? How?',
+  'What is the biggest mistake other people make when writing in your voice?',
+  'What should an AI know about you that is not obvious?'
+];
 
 const state = {
   current: 1,
@@ -346,20 +402,27 @@ const state = {
   selected_writing_types: [],
   custom_writing_types: [],
   format_definitions: {},
+  numbers: {},
   samples: [],
-  level_definitions: {}
+  number_definitions: {},
+  bad_output_examples_checked: [],
+  custom_bad_examples: [],
+  personal_characteristics: {}
 };
 
 function updateProgress() {
-  if (state.current === 7) return;
-  document.getElementById('progressFill').style.width = ((state.current - 1) / (TOTAL - 2) * 100) + '%';
+  if (state.current === TOTAL) return;
+  document.getElementById('progressFill').style.width = ((state.current - 1) / (TOTAL - 1) * 100) + '%';
 }
 
 function goTo(n) {
   if (n === 3) buildCategories();
   if (n === 4) buildFormatAccordions();
-  if (n === 5) updateSliderRange();
-  if (n === 6) { saveLevelDefs(); buildLevelDefAccordions(); }
+  if (n === 5) buildNumbersInputs();
+  if (n === 6) updateNumberDropdown();
+  if (n === 7) buildBadExamplesCheckboxes();
+  if (n === 8) buildCharacteristicsTextareas();
+  if (n === 9) { saveNumberDefs(); buildNumberDefAccordions(); }
   hideAllErrors();
   document.getElementById('step-' + state.current).classList.remove('active');
   state.current = n;
@@ -393,35 +456,135 @@ function validateAndGo(from, to) {
     state.use_case = useCase.value;
   }
   if (from === 5) {
-    if (state.samples.length === 0) {
+    saveNumbers();
+    var filledCount = Object.keys(state.numbers).filter(function(k) { return state.numbers[k] && state.numbers[k].trim(); }).length;
+    if (filledCount < 5) {
       showError('error-page5');
       return;
+    }
+  }
+  if (from === 6) {
+    if (state.samples.length === 0) {
+      showError('error-page6');
+      return;
+    }
+  }
+  if (from === 7) {
+    if (state.custom_bad_examples.length < 3) {
+      showError('error-page7');
+      return;
+    }
+  }
+  if (from === 8) {
+    saveCharacteristics();
+    var allAnswered = true;
+    for (var i = 0; i < 8; i++) {
+      if (!state.personal_characteristics[i] || !state.personal_characteristics[i].trim()) {
+        allAnswered = false;
+        break;
+      }
+    }
+    if (!allAnswered) {
+      showError('error-page8');
+      return;
+    }
+  }
+  if (from === 9) {
+    saveNumberDefs();
+    var usedNumbers = getUsedNumbers();
+    for (var i = 0; i < usedNumbers.length; i++) {
+      var num = usedNumbers[i];
+      if (!state.number_definitions[num] || !state.number_definitions[num].description) {
+        showError('error-page9');
+        return;
+      }
     }
   }
   goTo(to);
 }
 
 function validateAndSubmit() {
-  saveLevelDefs();
-  var usedLevels = getUsedLevels();
-  for (var i = 0; i < usedLevels.length; i++) {
-    var lvl = usedLevels[i];
-    if (!state.level_definitions[lvl] || !state.level_definitions[lvl].description) {
-      showError('error-page6');
-      return;
-    }
-  }
+  saveCharacteristics();
+  saveNumberDefs();
   submitForm();
 }
 
-function getMaxLevel() {
-  return state.use_case === 'social' ? 7 : 10;
+/* ── Number system ── */
+function buildNumbersInputs() {
+  var container = document.getElementById('numbersInputContainer');
+  container.innerHTML = '';
+  for (var i = 1; i <= 10; i++) {
+    var row = document.createElement('div');
+    row.className = 'numbers-row';
+    
+    var numDiv = document.createElement('div');
+    var numLabel = document.createElement('label');
+    numLabel.textContent = 'Number ' + i;
+    numLabel.style.marginTop = '6px';
+    var numInput = document.createElement('input');
+    numInput.type = 'text';
+    numInput.value = '';
+    numInput.placeholder = 'e.g. Texting my best friend';
+    numInput.dataset.number = i;
+    numInput.onchange = function() { updateNumberProgress(); };
+    numInput.oninput = function() { updateNumberProgress(); };
+    numDiv.appendChild(numLabel);
+    numDiv.appendChild(numInput);
+    
+    var ctxDiv = document.createElement('div');
+    ctxDiv.style.gridColumn = '2';
+    var ctxInput = document.createElement('input');
+    ctxInput.type = 'text';
+    ctxInput.value = '';
+    ctxInput.placeholder = 'Optional context or notes';
+    ctxInput.dataset.numberContext = i;
+    ctxDiv.appendChild(ctxInput);
+    
+    row.appendChild(numDiv);
+    row.appendChild(ctxDiv);
+    container.appendChild(row);
+  }
 }
 
-function getUsedLevels() {
-  var levels = {};
-  state.samples.forEach(function(s) { levels[s.level] = true; });
-  return Object.keys(levels).map(Number).sort(function(a, b) { return a - b; });
+function saveNumbers() {
+  state.numbers = {};
+  document.querySelectorAll('#numbersInputContainer input[data-number]').forEach(function(inp) {
+    var num = inp.dataset.number;
+    state.numbers[num] = inp.value.trim();
+  });
+}
+
+function updateNumberProgress() {
+  saveNumbers();
+  var filledCount = Object.keys(state.numbers).filter(function(k) { return state.numbers[k]; }).length;
+  var el = document.getElementById('numbersProgress');
+  if (filledCount >= 5) {
+    el.classList.add('ready');
+    el.textContent = 'Great. You have ' + filledCount + ' Numbers defined.';
+  } else {
+    el.classList.remove('ready');
+    el.textContent = 'Fill in at least 5 Numbers to continue. Current: ' + filledCount + '.';
+  }
+}
+
+function getUsedNumbers() {
+  var nums = {};
+  state.samples.forEach(function(s) { nums[s.number] = true; });
+  return Object.keys(nums).map(Number).sort(function(a, b) { return a - b; });
+}
+
+function updateNumberDropdown() {
+  saveNumbers();
+  var dropdown = document.getElementById('numberDropdown');
+  dropdown.innerHTML = '<option value="">Select a Number</option>';
+  for (var i = 1; i <= 10; i++) {
+    if (state.numbers[i]) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = 'Number ' + i + ': ' + state.numbers[i];
+      dropdown.appendChild(opt);
+    }
+  }
 }
 
 /* ── Accordion helper ── */
@@ -536,29 +699,15 @@ function saveFormatDefs() {
   });
 }
 
-/* ── Page 5: Samples ── */
-function updateSliderRange() {
-  var max = getMaxLevel();
-  var slider = document.getElementById('levelSlider');
-  slider.max = max;
-  if (parseInt(slider.value) > max) slider.value = max;
-  document.getElementById('sliderMaxLabel').textContent = max + '. Most formal';
-  updateSlider();
-}
-
-function updateSlider() {
-  var val = parseInt(document.getElementById('levelSlider').value);
-  document.getElementById('sliderNum').textContent = val;
-  document.getElementById('sliderDesc').textContent = SLIDER_HINTS[val] || '';
-}
-
+/* ── Page 6: Samples ── */
 function addSample() {
   var text = document.getElementById('sampleText').value.trim();
   if (!text) return;
   var context = document.getElementById('sampleContext').value.trim();
   var recipient = document.getElementById('sampleRecipient').value.trim();
-  var level = parseInt(document.getElementById('levelSlider').value);
-  state.samples.push({ text: text, context: context, recipient: recipient, level: level, id: Date.now() });
+  var number = parseInt(document.getElementById('numberDropdown').value);
+  if (!number) return;
+  state.samples.push({ text: text, context: context, recipient: recipient, number: number, id: Date.now() });
   renderSamples();
   clearSampleForm();
   hideAllErrors();
@@ -568,8 +717,7 @@ function clearSampleForm() {
   document.getElementById('sampleText').value = '';
   document.getElementById('sampleContext').value = '';
   document.getElementById('sampleRecipient').value = '';
-  document.getElementById('levelSlider').value = 5;
-  updateSlider();
+  document.getElementById('numberDropdown').value = '';
 }
 
 function deleteSample(id) {
@@ -587,87 +735,179 @@ function renderSamples() {
   }
   el.innerHTML = state.samples.map(function(s) {
     return '<div class="sample-card">' +
-      '<button class="sample-card-delete" onclick="deleteSample(' + s.id + ')">&#10005;</button>' +
-      '<div class="sample-card-meta">Level ' + s.level + (s.context ? '&nbsp;&nbsp;&middot;&nbsp;&nbsp;' + esc(s.context) : '') + (s.recipient ? '&nbsp;&nbsp;&middot;&nbsp;&nbsp;To: ' + esc(s.recipient) : '') + '</div>' +
+      '<button class="sample-card-delete" onclick="deleteSample(' + s.id + ')">X</button>' +
+      '<div class="sample-card-meta">Number ' + s.number + (s.context ? '&nbsp;&nbsp;&#183;&nbsp;&nbsp;' + esc(s.context) : '') + (s.recipient ? '&nbsp;&nbsp;&#183;&nbsp;&nbsp;To: ' + esc(s.recipient) : '') + '</div>' +
       '<div class="sample-card-text">' + esc(s.text) + '</div>' +
       '</div>';
   }).join('');
 }
 
-/* ── Page 6: Level Definitions ── */
-function buildLevelDefAccordions() {
-  var container = document.getElementById('levelDefsContainer');
+/* ── Page 7: Bad Examples ── */
+function buildBadExamplesCheckboxes() {
+  var container = document.getElementById('badExamplesContainer');
   container.innerHTML = '';
-  var usedLevels = getUsedLevels();
-  if (!usedLevels.length) {
+  var bodyDiv = document.createElement('div');
+  BAD_OUTPUT_EXAMPLES.forEach(function(example, idx) {
+    var lbl = document.createElement('label');
+    lbl.className = 'checkbox-item';
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.value = example;
+    cb.dataset.exampleIdx = idx;
+    if (state.bad_output_examples_checked.indexOf(example) !== -1) cb.checked = true;
+    cb.onchange = function() { syncBadExamples(); };
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(example));
+    bodyDiv.appendChild(lbl);
+  });
+  container.appendChild(createAccordion('Pre-written examples', bodyDiv));
+  renderCustomBadExamples();
+}
+
+function syncBadExamples() {
+  var checked = document.querySelectorAll('#badExamplesContainer input[type="checkbox"]:checked');
+  state.bad_output_examples_checked = Array.from(checked).map(function(cb) { return cb.value; });
+}
+
+function addCustomBadExample() {
+  var inp = document.getElementById('customBadInput');
+  var val = inp.value.trim();
+  if (!val) return;
+  if (state.custom_bad_examples.indexOf(val) === -1) {
+    state.custom_bad_examples.push(val);
+  }
+  inp.value = '';
+  renderCustomBadExamples();
+}
+
+function removeCustomBadExample(val) {
+  state.custom_bad_examples = state.custom_bad_examples.filter(function(t) { return t !== val; });
+  renderCustomBadExamples();
+}
+
+function renderCustomBadExamples() {
+  var container = document.getElementById('customBadList');
+  container.innerHTML = '';
+  state.custom_bad_examples.forEach(function(t) {
+    var tag = document.createElement('span');
+    tag.className = 'custom-tag';
+    tag.innerHTML = esc(t) + ' <button onclick="removeCustomBadExample(\'' + esc(t).replace(/'/g, "\\'") + '\')">&times;</button>';
+    container.appendChild(tag);
+  });
+}
+
+/* ── Page 8: Personal Characteristics ── */
+function buildCharacteristicsTextareas() {
+  var container = document.getElementById('characteristicsContainer');
+  container.innerHTML = '';
+  PERSONAL_CHARACTERISTICS_QUESTIONS.forEach(function(question, idx) {
+    var lbl = document.createElement('label');
+    lbl.textContent = question;
+    container.appendChild(lbl);
+    var ta = document.createElement('textarea');
+    ta.style.minHeight = '60px';
+    ta.placeholder = 'Your answer...';
+    ta.dataset.charIdx = idx;
+    ta.value = state.personal_characteristics[idx] || '';
+    container.appendChild(ta);
+  });
+}
+
+function saveCharacteristics() {
+  document.querySelectorAll('#characteristicsContainer textarea[data-char-idx]').forEach(function(ta) {
+    var idx = parseInt(ta.dataset.charIdx);
+    state.personal_characteristics[idx] = ta.value.trim();
+  });
+}
+
+/* ── Page 9: Number Definitions ── */
+function buildNumberDefAccordions() {
+  var container = document.getElementById('numberDefsContainer');
+  container.innerHTML = '';
+  var usedNumbers = getUsedNumbers();
+  if (!usedNumbers.length) {
     container.innerHTML = '<p class="body" style="color:var(--muted);font-style:italic;">No samples added yet. Go back and add samples first.</p>';
     return;
   }
-  usedLevels.forEach(function(lvl) {
+  usedNumbers.forEach(function(num) {
     var bodyDiv = document.createElement('div');
 
-    // Illustrative example
-    if (ILLUSTRATIVE_EXAMPLES[lvl]) {
-      var illus = document.createElement('div');
-      illus.className = 'level-illustrative';
-      illus.textContent = '"' + ILLUSTRATIVE_EXAMPLES[lvl] + '"';
-      bodyDiv.appendChild(illus);
+    var numLabel = document.createElement('div');
+    numLabel.style.fontSize = '0.9rem';
+    numLabel.style.marginBottom = '12px';
+    numLabel.style.color = 'var(--muted)';
+    numLabel.textContent = 'Context: ' + (state.numbers[num] || '');
+    bodyDiv.appendChild(numLabel);
+
+    var levelSamples = state.samples.filter(function(s) { return s.number === num; });
+    if (levelSamples.length > 0) {
+      var samplesLabel = document.createElement('div');
+      samplesLabel.style.fontSize = '0.85rem';
+      samplesLabel.style.fontWeight = '500';
+      samplesLabel.style.marginBottom = '8px';
+      samplesLabel.textContent = 'Your samples at this Number:';
+      bodyDiv.appendChild(samplesLabel);
+      levelSamples.forEach(function(s) {
+        var card = document.createElement('div');
+        card.style.background = '#faf7f2';
+        card.style.border = '1px solid var(--rule)';
+        card.style.borderRadius = '4px';
+        card.style.padding = '12px 14px';
+        card.style.marginBottom = '8px';
+        card.style.fontSize = '0.85rem';
+        card.style.lineHeight = '1.6';
+        card.style.color = 'var(--ink)';
+        card.style.whiteSpace = 'pre-wrap';
+        var meta = document.createElement('div');
+        meta.style.fontSize = '0.75rem';
+        meta.style.color = 'var(--muted)';
+        meta.style.marginBottom = '4px';
+        meta.textContent = (s.context || 'Sample') + (s.recipient ? ' / To: ' + s.recipient : '');
+        card.appendChild(meta);
+        var text = document.createElement('div');
+        text.textContent = s.text;
+        card.appendChild(text);
+        bodyDiv.appendChild(card);
+      });
     }
 
-    // Read-only samples at this level
-    var levelSamples = state.samples.filter(function(s) { return s.level === lvl; });
-    levelSamples.forEach(function(s) {
-      var card = document.createElement('div');
-      card.className = 'level-sample-readonly';
-      var meta = document.createElement('div');
-      meta.className = 'level-sample-readonly-meta';
-      meta.textContent = (s.context || 'Sample') + (s.recipient ? ' / To: ' + s.recipient : '');
-      card.appendChild(meta);
-      var text = document.createElement('div');
-      text.textContent = s.text;
-      card.appendChild(text);
-      bodyDiv.appendChild(card);
-    });
-
-    // Required textarea
     var lbl1 = document.createElement('label');
-    lbl1.textContent = 'Describe Level ' + lvl + ' in your own words';
+    lbl1.textContent = 'Describe Number ' + num + ' in your own words (required)';
     lbl1.style.marginTop = '14px';
     bodyDiv.appendChild(lbl1);
     var ta1 = document.createElement('textarea');
     ta1.style.minHeight = '80px';
-    ta1.placeholder = 'Who do you write to, how do you sound, what makes this level distinct?';
-    ta1.dataset.levelNum = lvl;
-    ta1.dataset.levelField = 'description';
-    ta1.value = (state.level_definitions[lvl] && state.level_definitions[lvl].description) || '';
+    ta1.placeholder = 'Who do you write to at this level? How do you sound? What makes this Number distinct?';
+    ta1.dataset.numberNum = num;
+    ta1.dataset.numberField = 'description';
+    ta1.value = (state.number_definitions[num] && state.number_definitions[num].description) || '';
     bodyDiv.appendChild(ta1);
 
-    // Optional textarea
     var lbl2 = document.createElement('label');
-    lbl2.textContent = 'Anything else specific to this level?';
+    lbl2.textContent = 'Anything else specific to this Number? (optional)';
     bodyDiv.appendChild(lbl2);
     var ta2 = document.createElement('textarea');
     ta2.style.minHeight = '60px';
     ta2.placeholder = 'Optional';
-    ta2.dataset.levelNum = lvl;
-    ta2.dataset.levelField = 'notes';
-    ta2.value = (state.level_definitions[lvl] && state.level_definitions[lvl].notes) || '';
+    ta2.dataset.numberNum = num;
+    ta2.dataset.numberField = 'notes';
+    ta2.value = (state.number_definitions[num] && state.number_definitions[num].notes) || '';
     bodyDiv.appendChild(ta2);
 
-    container.appendChild(createAccordion('Level ' + lvl, bodyDiv));
+    container.appendChild(createAccordion('Number ' + num, bodyDiv));
   });
 }
 
-function saveLevelDefs() {
-  document.querySelectorAll('#levelDefsContainer textarea[data-level-num]').forEach(function(ta) {
-    var lvl = parseInt(ta.dataset.levelNum);
-    if (!state.level_definitions[lvl]) state.level_definitions[lvl] = { description: '', notes: '' };
-    state.level_definitions[lvl][ta.dataset.levelField] = ta.value.trim();
+function saveNumberDefs() {
+  document.querySelectorAll('#numberDefsContainer textarea[data-number-num]').forEach(function(ta) {
+    var num = parseInt(ta.dataset.numberNum);
+    if (!state.number_definitions[num]) state.number_definitions[num] = { description: '', notes: '' };
+    state.number_definitions[num][ta.dataset.numberField] = ta.value.trim();
   });
 }
 
 /* ── Output builders ── */
-function buildVoiceProfile() {
+function buildVoiceProfileMarkdown() {
   var name = state.client_name || 'this person';
   var role = state.client_role;
   var email = state.client_email;
@@ -675,71 +915,74 @@ function buildVoiceProfile() {
   var allTypes = state.selected_writing_types.concat(state.custom_writing_types);
   var formats = state.format_definitions;
   var samples = state.samples;
-  var defs = state.level_definitions;
+  var defs = state.number_definitions;
 
   var p = '';
-  p += '════════════════════════════════════════\n';
-  p += 'VOICE STUDIO PROFILE\n';
-  p += '════════════════════════════════════════\n\n';
-  p += 'NAME: ' + name + '\n';
-  if (role) p += 'ROLE: ' + role + '\n';
-  if (email) p += 'EMAIL: ' + email + '\n';
-  p += 'USE CASE: ' + useCase + '\n';
-  p += 'BUILT: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '\n\n';
+  p += '# VOICE STUDIO PROFILE\n\n';
+  p += 'Name: ' + name + '\n';
+  if (role) p += 'Role: ' + role + '\n';
+  if (email) p += 'Email: ' + email + '\n';
+  p += 'Use Case: ' + useCase + '\n';
+  p += 'Built: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '\n\n';
 
-  p += '────────────────────────────────────────\n';
-  p += 'WRITING TYPES\n';
-  p += '────────────────────────────────────────\n';
-  allTypes.length ? allTypes.forEach(function(t) { p += '  . ' + t + '\n'; }) : p += '  (none selected)\n';
+  p += '## WRITING TYPES\n\n';
+  allTypes.length ? allTypes.forEach(function(t) { p += '- ' + t + '\n'; }) : p += '(none selected)\n';
   p += '\n';
 
-  p += '────────────────────────────────────────\n';
-  p += 'FORMAT LIBRARY\n';
-  p += '────────────────────────────────────────\n\n';
+  p += '## FORMAT LIBRARY\n\n';
   var withContent = allTypes.filter(function(t) { return formats[t]; });
   if (!withContent.length) {
-    p += '  (no format descriptions provided)\n\n';
+    p += '(no format descriptions provided)\n\n';
   } else {
-    withContent.forEach(function(t) { p += t.toUpperCase() + '\n' + formats[t] + '\n\n'; });
+    withContent.forEach(function(t) { p += '### ' + t + '\n\n' + formats[t] + '\n\n'; });
   }
 
-  p += '────────────────────────────────────────\n';
-  p += 'LEVEL DEFINITIONS\n';
-  p += '────────────────────────────────────────\n';
-  var usedLevels = getUsedLevels();
-  if (usedLevels.length) {
-    usedLevels.forEach(function(lvl) {
-      var d = defs[lvl];
+  p += '## YOUR NUMBERS\n\n';
+  var usedNumbers = getUsedNumbers();
+  if (usedNumbers.length) {
+    usedNumbers.forEach(function(num) {
+      var d = defs[num];
+      p += '**Number ' + num + '**: ' + (state.numbers[num] || '') + '\n';
       if (d && d.description) {
-        p += '  Level ' + lvl + ': ' + d.description + '\n';
-        if (d.notes) p += '    Notes: ' + d.notes + '\n';
+        p += d.description + '\n';
+        if (d.notes) p += 'Additional notes: ' + d.notes + '\n';
       }
+      p += '\n';
     });
   } else {
-    p += '  (not defined)\n';
+    p += '(not defined)\n';
   }
   p += '\n';
 
-  p += '────────────────────────────────────────\n';
-  p += 'VOICE SAMPLES (' + samples.length + ')\n';
-  p += '────────────────────────────────────────\n\n';
+  p += '## VOICE SAMPLES (' + samples.length + ')\n\n';
   if (!samples.length) {
-    p += '  (no samples added)\n';
+    p += '(no samples added)\n';
   } else {
-    usedLevels.forEach(function(lvl) {
-      var levelSamples = samples.filter(function(s) { return s.level === lvl; });
-      levelSamples.forEach(function(s, i) {
-        p += 'SAMPLE (Level ' + s.level + ')\n';
+    usedNumbers.forEach(function(num) {
+      var numberSamples = samples.filter(function(s) { return s.number === num; });
+      numberSamples.forEach(function(s, i) {
+        p += '### Sample ' + (i + 1) + ' (Number ' + s.number + ')\n\n';
         if (s.context) p += 'Type: ' + s.context + '\n';
-        if (s.recipient) p += 'To: ' + s.recipient + '\n';
-        p += '\n' + s.text + '\n\n---\n\n';
+        if (s.recipient) p += 'To: ' + s.recipient + '\n\n';
+        p += s.text + '\n\n';
       });
     });
   }
 
-  p += '════════════════════════════════════════\n';
-  p += 'END OF VOICE STUDIO PROFILE\n';
-  p += '════════════════════════════════════════\n';
+  p += '## WHAT YOU DO NOT WANT\n\n';
+  var allBadExamples = state.bad_output_examples_checked.concat(state.custom_bad_examples);
+  allBadExamples.forEach(function(ex) {
+    p += '- ' + ex + '\n';
+  });
+  p += '\n';
+
+  p += '## YOUR VOICE IN YOUR WORDS\n\n';
+  PERSONAL_CHARACTERISTICS_QUESTIONS.forEach(function(q, i) {
+    p += '**' + q + '**\n';
+    p += (state.personal_characteristics[i] || '') + '\n\n';
+  });
+
+  p += '---\n\nEnd of Voice Studio Profile\n';
   return p;
 }
 
@@ -752,31 +995,26 @@ function buildSystemPromptXML() {
   var allTypes = state.selected_writing_types.concat(state.custom_writing_types);
   var formats = state.format_definitions;
   var samples = state.samples;
-  var defs = state.level_definitions;
-  var maxLevel = getMaxLevel();
-  var usedLevels = getUsedLevels();
+  var defs = state.number_definitions;
+  var usedNumbers = getUsedNumbers();
 
-  var x = '';
+  var x = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  x += '<voice_profile>\n\n';
 
-  // Role
-  x += '<role>You are ' + xmlEsc(firstName) + '\'s writing assistant. Your only job is to write in ' + xmlEsc(firstName) + '\'s voice.</role>\n\n';
+  x += '<role>You are ' + xmlEsc(firstName) + ' writing assistant. Your only job is to write in ' + xmlEsc(firstName) + ' voice.</role>\n\n';
 
-  // Context
   x += '<context>\n';
   x += '  <name>' + xmlEsc(state.client_name) + '</name>\n';
   x += '  <role>' + xmlEsc(state.client_role) + '</role>\n';
   x += '  <use_case>' + xmlEsc(state.use_case) + '</use_case>\n';
   x += '</context>\n\n';
 
-  // How it works
-  var rangeText = maxLevel === 7 ? '1 to 7' : '1 to 10';
-  x += '<how_it_works>' + xmlEsc(firstName) + ' will give you three things: a number from ' + rangeText + ', who they\'re writing to, and what they want to say. You write it. That\'s the whole job.\n';
+  x += '<how_it_works>' + xmlEsc(firstName) + ' will give you three things: a Number (1-10), who they are writing to, and what they want to say. You write it. That is the whole job.\n';
   x += '  <example>5, email to my accountant about moving our meeting</example>\n';
   x += '  <example>2, text to my cousin just checking in</example>\n';
   x += '  <example>7, LinkedIn post about why I started my business</example>\n';
   x += '</how_it_works>\n\n';
 
-  // Writing categories
   x += '<writing_categories>\n';
   var categorized = {};
   state.selected_writing_types.forEach(function(t) {
@@ -805,7 +1043,6 @@ function buildSystemPromptXML() {
   }
   x += '</writing_categories>\n\n';
 
-  // Format rules
   var withContent = allTypes.filter(function(t) { return formats[t]; });
   if (withContent.length) {
     x += '<format_rules>\n';
@@ -815,17 +1052,16 @@ function buildSystemPromptXML() {
     x += '</format_rules>\n\n';
   }
 
-  // Formality scale
-  x += '<formality_scale>\n';
-  usedLevels.forEach(function(lvl) {
-    var d = defs[lvl] || {};
-    x += '  <level number="' + lvl + '">\n';
+  x += '<numbers_scale>\n';
+  usedNumbers.forEach(function(num) {
+    var d = defs[num] || {};
+    x += '  <number value="' + num + '" context="' + xmlEsc(state.numbers[num] || '') + '">\n';
     if (d.description) x += '    <description>' + xmlEsc(d.description) + '</description>\n';
     if (d.notes) x += '    <notes>' + xmlEsc(d.notes) + '</notes>\n';
-    var levelSamples = samples.filter(function(s) { return s.level === lvl; });
-    if (levelSamples.length) {
+    var numberSamples = samples.filter(function(s) { return s.number === num; });
+    if (numberSamples.length) {
       x += '    <samples>\n';
-      levelSamples.forEach(function(s, i) {
+      numberSamples.forEach(function(s, i) {
         x += '      <sample number="' + (i + 1) + '"';
         if (s.context) x += ' context="' + xmlEsc(s.context) + '"';
         if (s.recipient) x += ' recipient="' + xmlEsc(s.recipient) + '"';
@@ -833,14 +1069,29 @@ function buildSystemPromptXML() {
       });
       x += '    </samples>\n';
     }
-    x += '  </level>\n';
+    x += '  </number>\n';
   });
-  x += '</formality_scale>\n\n';
+  x += '</numbers_scale>\n\n';
 
-  // Voice rules
+  x += '<what_not_to_do>\n';
+  var allBadExamples = state.bad_output_examples_checked.concat(state.custom_bad_examples);
+  allBadExamples.forEach(function(ex) {
+    x += '  <avoid>' + xmlEsc(ex) + '</avoid>\n';
+  });
+  x += '</what_not_to_do>\n\n';
+
+  x += '<personal_voice>\n';
+  PERSONAL_CHARACTERISTICS_QUESTIONS.forEach(function(q, i) {
+    x += '  <characteristic>\n';
+    x += '    <question>' + xmlEsc(q) + '</question>\n';
+    x += '    <answer>' + xmlEsc(state.personal_characteristics[i] || '') + '</answer>\n';
+    x += '  </characteristic>\n';
+  });
+  x += '</personal_voice>\n\n';
+
   x += '<voice_rules>\n';
-  x += '  <rule>Write in ' + xmlEsc(firstName) + '\'s voice, not in generic professional language.</rule>\n';
-  x += '  <rule>Never use filler phrases like "I hope this finds you well" or "Certainly!" or "I\'d be happy to help."</rule>\n';
+  x += '  <rule>Write in ' + xmlEsc(firstName) + ' voice, not in generic professional language.</rule>\n';
+  x += '  <rule>Never use filler phrases like "I hope this finds you well" or "Certainly" or "I would be happy to help."</rule>\n';
   x += '  <rule>No em dashes. Use a period or restructure the sentence.</rule>\n';
   x += '  <rule>Active voice always. "I will send it" not "It will be sent."</rule>\n';
   x += '  <rule>Vary sentence length. Short and long together.</rule>\n';
@@ -849,28 +1100,36 @@ function buildSystemPromptXML() {
   x += '  <rule>Never add a signature. ' + xmlEsc(firstName) + ' handles that.</rule>\n';
   x += '</voice_rules>\n\n';
 
-  // Output rules
   x += '<output_rules>\n';
-  x += '  <rule>Deliver only the finished writing. No preamble, no explanation, no "here\'s a draft."</rule>\n';
+  x += '  <rule>Deliver only the finished writing. No preamble, no explanation, no "here is a draft."</rule>\n';
   x += '  <rule>If something is unclear, ask one question before writing. Not multiple.</rule>\n';
-  x += '  <rule>Check your work before presenting it. Wrong level, wrong voice, wrong format means rewrite.</rule>\n';
-  x += '</output_rules>\n';
+  x += '  <rule>Check your work before presenting it. Wrong Number, wrong voice, wrong format means rewrite.</rule>\n';
+  x += '</output_rules>\n\n';
 
+  x += '</voice_profile>\n';
   return x;
 }
 
 /* ── Submission ── */
-/* DEBUG: Remove before production */
-function debugPreview() {
-  saveLevelDefs();
-  document.getElementById('debugProfile').textContent = buildVoiceProfile();
-  document.getElementById('debugPrompt').textContent = buildSystemPromptXML();
-  document.getElementById('debugModal').style.display = 'block';
+function copyToClipboard(elementId, button) {
+  var text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var original = button.textContent;
+    button.textContent = 'Copied!';
+    button.classList.add('copied');
+    setTimeout(function() {
+      button.textContent = original;
+      button.classList.remove('copied');
+    }, 2000);
+  });
 }
 
 function submitForm() {
-  var profile = buildVoiceProfile();
-  var prompt = buildSystemPromptXML();
+  var profileMarkdown = buildVoiceProfileMarkdown();
+  var profileXML = buildSystemPromptXML();
+
+  document.getElementById('output-markdown').textContent = profileMarkdown;
+  document.getElementById('output-xml').textContent = profileXML;
 
   var formData = new URLSearchParams();
   formData.append('form-name', 'voice-studio-submission');
@@ -878,8 +1137,11 @@ function submitForm() {
   formData.append('client-role', state.client_role);
   formData.append('client-email', state.client_email);
   formData.append('use-case', state.use_case);
-  formData.append('voice-profile', profile);
-  formData.append('system-prompt', prompt);
+  formData.append('voice-profile-markdown', profileMarkdown);
+  formData.append('voice-profile', profileXML);
+  formData.append('numbers', JSON.stringify(state.numbers));
+  formData.append('bad-output-examples', state.bad_output_examples_checked.concat(state.custom_bad_examples).join('\n'));
+  formData.append('personal-characteristics', JSON.stringify(state.personal_characteristics));
   formData.append('bot-field', '');
 
   fetch('/', {
@@ -888,20 +1150,21 @@ function submitForm() {
     body: formData.toString()
   }).then(function(response) {
     if (response.ok) {
-      goTo(7);
+      goTo(10);
     } else {
       throw new Error('Submission failed');
     }
   }).catch(function() {
-    var errorEl = document.getElementById('error-page6');
-    errorEl.innerHTML = 'Something went wrong. Please try again, or email your submission directly to <a href="mailto:ivtownsend.michelle@gmail.com" style="color:var(--accent);">ivtownsend.michelle@gmail.com</a>.';
-    errorEl.classList.add('visible');
+    var errorEl = document.createElement('div');
+    errorEl.style.color = 'var(--error)';
+    errorEl.style.marginTop = '16px';
+    errorEl.innerHTML = 'Something went wrong. Your files are displayed above. You can copy them manually. Or email your submission directly to <a href="mailto:ivtownsend.michelle@gmail.com" style="color:var(--accent);">ivtownsend.michelle@gmail.com</a>.';
+    document.querySelector('.thankyou-box').appendChild(errorEl);
   });
 }
 
 /* ── Init ── */
 renderSamples();
-updateSlider();
 updateProgress();
 </script>
 </body>

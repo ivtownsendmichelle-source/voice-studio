@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1410; --paper: #F5F0E8; --accent: #1B3A2D;
+    --accent-hover: #142e23; --gold: #C8A850; --muted: #7a6e62;
+    --rule: #d4c9b8; --error: #b04040;
+  }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh;
+  }
+  .shell { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+  .wordmark { font-family: 'Playfair Display', serif; font-size: 2.8rem; letter-spacing: -0.02em; color: var(--accent); line-height: 1; margin-bottom: 2px; }
+  .byline { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 40px; }
+  .progress-bar { height: 2px; background: var(--rule); border-radius: 1px; margin-bottom: 36px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 1px; transition: width 0.4s ease; }
+  .step { display: none; animation: fadeUp 0.35s ease; }
+  .step.active { display: block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .step-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 600; line-height: 1.25; margin-bottom: 12px; color: var(--accent); }
+  p.body { font-size: 0.95rem; line-height: 1.7; color: #3a3028; margin-bottom: 16px; }
+  label { display: block; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; margin-top: 20px; }
+  input[type="text"], input[type="email"], textarea { width: 100%; background: white; border: 1px solid var(--rule); border-radius: 4px; padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--ink); outline: none; transition: border-color 0.2s; }
+  input[type="text"]:focus, input[type="email"]:focus, textarea:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+  .callout { background: rgba(27,58,45,0.06); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 0 4px 4px 0; margin: 16px 0 20px; font-size: 0.88rem; line-height: 1.7; color: #3a3028; }
+
+  /* Radio buttons */
+  .radio-group { margin-top: 12px; }
+  .radio-option { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; cursor: pointer; font-size: 0.92rem; line-height: 1.5; color: var(--ink); }
+  .radio-option input[type="radio"] { margin-top: 4px; accent-color: var(--accent); }
+
+  /* Accordion */
+  .accordion { border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 8px; overflow: hidden; }
+  .accordion-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: white; cursor: pointer; user-select: none; font-size: 0.92rem; font-weight: 500; color: var(--ink); border: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif; }
+  .accordion-header:hover { background: #faf7f2; }
+  .accordion-chevron { font-size: 0.7rem; color: var(--muted); transition: transform 0.2s; }
+  .accordion.open .accordion-chevron { transform: rotate(90deg); color: var(--gold); }
+  .accordion-body { display: none; padding: 4px 16px 16px; background: white; }
+  .accordion.open .accordion-body { display: block; }
+
+  /* Checkboxes inside accordions */
+  .checkbox-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.9rem; color: var(--ink); cursor: pointer; }
+  .checkbox-item input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+  /* Custom add field */
+  .custom-add-row { display: flex; gap: 8px; margin-top: 16px; }
+  .custom-add-row input { flex: 1; }
+  .custom-add-row button { white-space: nowrap; padding: 10px 16px; background: transparent; border: 1px solid var(--rule); border-radius: 4px; font-size: 0.85rem; cursor: pointer; color: var(--muted); transition: all 0.15s; font-family: 'DM Sans', sans-serif; }
+  .custom-add-row button:hover { border-color: var(--accent); color: var(--accent); }
+  .custom-items { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .custom-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 1px solid var(--rule); border-radius: 16px; font-size: 0.82rem; background: white; color: var(--ink); }
+  .custom-tag button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1; }
+  .custom-tag button:hover { color: var(--error); }
+
+  /* Sample cards */
+  .sample-card { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 16px 18px; margin-bottom: 10px; position: relative; }
+  .sample-card-meta { font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .sample-card-text { font-size: 0.9rem; line-height: 1.6; color: var(--ink); white-space: pre-wrap; }
+  .sample-card-delete { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--rule); cursor: pointer; font-size: 1rem; transition: color 0.15s; }
+  .sample-card-delete:hover { color: var(--error); }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-style: italic; font-size: 0.9rem; border: 1px dashed var(--rule); border-radius: 6px; margin-bottom: 20px; }
+  .sample-entry-box { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 20px; margin-bottom: 20px; }
+
+  /* Level slider */
+  .level-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .level-number { font-family: 'Playfair Display', serif; font-size: 3rem; line-height: 1; color: var(--accent); }
+  .level-desc-text { font-size: 0.9rem; color: var(--muted); font-style: italic; }
+  input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: var(--rule); border-radius: 2px; outline: none; margin: 12px 0; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); cursor: pointer; transition: transform 0.1s; }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .level-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); }
+
+  /* Level definition accordion extras */
+  .level-sample-readonly { background: #faf7f2; border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; margin-bottom: 8px; font-size: 0.85rem; line-height: 1.6; color: var(--ink); white-space: pre-wrap; }
+  .level-sample-readonly-meta { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .level-illustrative { font-size: 0.85rem; font-style: italic; color: var(--rule); margin-bottom: 12px; padding: 8px 12px; border-left: 2px solid var(--rule); }
+
+  /* Buttons */
+  .btn { display: inline-block; padding: 12px 28px; border-radius: 4px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .btn-secondary:hover { background: rgba(27,58,45,0.07); }
+  .btn-ghost { background: transparent; color: var(--muted); padding: 12px 0; font-size: 0.85rem; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-ghost:hover { color: var(--ink); }
+  .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 28px; flex-wrap: wrap; }
+
+  /* Inline errors */
+  .inline-error { color: var(--error); font-size: 0.82rem; margin-top: 8px; display: none; }
+  .inline-error.visible { display: block; }
+
+  /* Thank you */
+  .thankyou-box { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 32px; font-size: 0.95rem; line-height: 1.8; color: var(--ink); }
+
+  @media (max-width: 500px) { .wordmark { font-size: 2rem; } h2 { font-size: 1.3rem; } .level-number { font-size: 2.2rem; } }
+</style>
+</head>
+<body>
+
+<!-- Netlify Forms hidden form for bot detection -->
+<form name="voice-studio-submission" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="client-name" />
+  <input type="text" name="client-role" />
+  <input type="email" name="client-email" />
+  <input type="text" name="use-case" />
+  <textarea name="voice-profile"></textarea>
+  <textarea name="system-prompt"></textarea>
+  <input type="text" name="bot-field" />
+</form>
+
+<div class="shell">
+  <div class="wordmark">Voice Studio</div>
+  <div class="byline">By Michelle Townsend Consulting</div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <!-- PAGE 1: INTRO -->
+  <div class="step active" id="step-1">
+    <div class="step-label">Introduction</div>
+    <h2>What is Voice Studio?</h2>
+    <p class="body">Voice Studio is a voice profile. A complete reference for how you write at every level of formality, built from your real writing.</p>
+    <p class="body">Your writing changes depending on who you're talking to. A funder email reads differently than a board memo. A client thank-you reads differently than a vendor request. An Instagram caption reads differently than a LinkedIn post. Voice Studio captures that range. You define what each level of formality means for you. You describe how each format works.</p>
+    <p class="body">When you finish, you'll have a complete voice profile on file. I review every submission personally and follow up within 72 hours.</p>
+    <p class="body">This walks you through it in five steps. There are no wrong answers. The more honest your samples, the better it works.</p>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goTo(2)">Let's build it</button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: IDENTIFICATION + USE CASE -->
+  <div class="step" id="step-2">
+    <div class="step-label">Step 1 of 5</div>
+    <h2>First, who are we building this for?</h2>
+    <label>Name</label>
+    <input type="text" id="clientName" />
+    <label>Role</label>
+    <input type="text" id="clientRole" />
+    <label>Email</label>
+    <input type="email" id="clientEmail" />
+    <label style="margin-bottom: 10px;">What are you using Voice Studio for?</label>
+    <div class="radio-group">
+      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
+        <input type="radio" name="useCase" value="written" />
+        Written communications (emails, proposals, board memos, grants)
+      </label>
+      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
+        <input type="radio" name="useCase" value="social" />
+        Social media and brand voice (Facebook, Instagram, LinkedIn, content)
+      </label>
+      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
+        <input type="radio" name="useCase" value="both" />
+        Both. Note: this version is longer because it captures voice across both contexts.
+      </label>
+    </div>
+    <div class="inline-error" id="error-page2" role="alert" aria-live="polite">Please fill in all fields to continue.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(1)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndGo(2, 3)">Next</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3: WRITING CATEGORIES -->
+  <div class="step" id="step-3">
+    <div class="step-label">Step 2 of 5</div>
+    <h2>What kinds of writing do you need help with?</h2>
+    <p class="body">Pick everything that applies. Add your own if something isn't listed.</p>
+    <div id="categoriesContainer"></div>
+    <div class="custom-add-row">
+      <input type="text" id="customTypeInput" placeholder="Add your own..." onkeydown="if(event.key==='Enter')addCustomType()" />
+      <button onclick="addCustomType()">+ Add</button>
+    </div>
+    <div class="custom-items" id="customTypesList"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
+      <button class="btn btn-primary" onclick="goTo(4)">Next</button>
+    </div>
+  </div>
+
+  <!-- PAGE 4: FORMAT LIBRARY -->
+  <div class="step" id="step-4">
+    <div class="step-label">Step 3 of 5</div>
+    <h2>How do you write each one?</h2>
+    <p class="body">For each type of writing you selected, describe how you structure it. How it opens, what goes in the middle, how it closes, how long it usually is. Open the ones you want to fill. Leave the rest closed.</p>
+    <div class="callout">
+      Example. Newsletter: I open with something personal that happened that week. Then the main topic. I close with a question or a call to action. Usually 300 to 500 words.<br><br>
+      Example. Facebook post: Short. One idea. No hashtags. Sometimes a question at the end.<br><br>
+      Example. Client email: I lead with their name, acknowledge what they reached out about, then get to the point. I always close with a next step.
+    </div>
+    <div id="formatContainer"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(3)">Back</button>
+      <button class="btn btn-primary" onclick="saveFormatDefs(); goTo(5)">Next</button>
+    </div>
+  </div>
+
+  <!-- PAGE 5: SAMPLE COLLECTION -->
+  <div class="step" id="step-5">
+    <div class="step-label">Step 4 of 5</div>
+    <h2>Now paste in your samples.</h2>
+    <p class="body">Find something you actually wrote. A text, an email, a post. Copy it and paste it here. Then tell us what it was, who it was for, and what level it feels like.</p>
+    <p class="body">Add as many as you want. Three samples at any level you actually use is a good target. The more you add, the better this works.</p>
+    <div id="samplesList"></div>
+    <div class="sample-entry-box">
+      <label>Paste your sample here</label>
+      <textarea id="sampleText" placeholder="Paste the actual text you wrote..."></textarea>
+      <label>What was this?</label>
+      <input type="text" id="sampleContext" placeholder="e.g. Email to my landlord, text to my sister, Facebook post about the farm..." />
+      <label>Who were you writing to?</label>
+      <input type="text" id="sampleRecipient" placeholder="e.g. My business partner, a new customer, my mom..." />
+      <label>What level does this feel like?</label>
+      <div class="level-display">
+        <div class="level-number" id="sliderNum">5</div>
+        <div class="level-desc-text" id="sliderDesc">Standard professional.</div>
+      </div>
+      <input type="range" min="1" max="10" value="5" id="levelSlider" oninput="updateSlider()" />
+      <div class="level-labels"><span>1. Most casual</span><span id="sliderMaxLabel">10. Most formal</span></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="clearSampleForm()">Clear</button>
+        <button class="btn btn-primary" onclick="addSample()">Add this sample</button>
+      </div>
+    </div>
+    <div class="inline-error" id="error-page5" role="alert" aria-live="polite">Add at least one sample to continue.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="saveFormatDefs(); goTo(4)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndGo(5, 6)">I'm done adding samples. Next.</button>
+    </div>
+  </div>
+
+  <!-- PAGE 6: LEVEL DEFINITIONS -->
+  <div class="step" id="step-6">
+    <div class="step-label">Step 5 of 5</div>
+    <h2>Describe the levels you used.</h2>
+    <p class="body">Look at your samples for each level. Tell us in your own words what makes each one distinct.</p>
+    <div id="levelDefsContainer"></div>
+    <div class="inline-error" id="error-page6" role="alert" aria-live="polite">Please describe every level shown before submitting.</div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goTo(5)">Back</button>
+      <button class="btn btn-primary" onclick="validateAndSubmit()">Submit</button>
+      <!-- DEBUG: Remove before production -->
+      <button class="btn btn-secondary" onclick="debugPreview()" style="border-color: var(--error); color: var(--error);">Debug: Preview Output</button>
+    </div>
+  </div>
+
+  <!-- DEBUG: Remove this entire modal before production -->
+  <div id="debugModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; overflow-y:auto; padding:24px;" onclick="if(event.target===this)this.style.display='none'">
+    <div style="max-width:800px; margin:0 auto; background:white; border-radius:8px; padding:28px; position:relative;">
+      <button onclick="document.getElementById('debugModal').style.display='none'" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.4rem; cursor:pointer; color:#999;">&times;</button>
+      <h3 style="font-family:'Playfair Display',serif; color:var(--error); margin-bottom:4px;">DEBUG OUTPUT</h3>
+      <p style="font-size:0.75rem; color:var(--error); margin-bottom:20px;">Remove this modal and the debug button before production deploy.</p>
+      <div style="margin-bottom:20px;">
+        <div style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;">Voice Profile (human-readable)</div>
+        <pre id="debugProfile" style="background:#f8f6f2; border:1px solid var(--rule); border-radius:4px; padding:16px; font-size:0.75rem; line-height:1.7; white-space:pre-wrap; word-break:break-word; max-height:400px; overflow-y:auto;"></pre>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-bottom:8px;">System Prompt (XML)</div>
+        <pre id="debugPrompt" style="background:#f8f6f2; border:1px solid var(--rule); border-radius:4px; padding:16px; font-size:0.75rem; line-height:1.7; white-space:pre-wrap; word-break:break-word; max-height:400px; overflow-y:auto;"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 7: THANK YOU -->
+  <div class="step" id="step-7">
+    <div class="step-label">Submission received</div>
+    <div class="thankyou-box">
+      Thank you. Your responses are in my inbox. I'll read through them personally and reach out within 72 hours. If you want to give me a head start, hit reply on the confirmation email and tell me what brought you here.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TOTAL = 7;
+
+const CATEGORIES = {
+  'Client and customer writing': [
+    'Emails to clients', 'Customer service replies', 'Proposals and quotes', 'Intake or onboarding messages'
+  ],
+  'Internal team writing': [
+    'Emails to staff or team', 'Internal memos', 'Meeting recaps', 'Slack or chat messages to team'
+  ],
+  'Board and governance writing': [
+    'Board or committee emails', 'Board reports', 'Meeting minutes', 'Policy or procedure documents'
+  ],
+  'Funder and donor writing': [
+    'Grant writing', 'Funder updates', 'Donor thank-yous', 'Sponsorship requests'
+  ],
+  'Marketing and outreach': [
+    'Newsletters', 'Facebook posts', 'Instagram captions', 'LinkedIn posts', 'TikTok captions',
+    'YouTube descriptions', 'Twitter or X posts', 'Press releases', 'Blog posts'
+  ],
+  'Vendor and partner writing': [
+    'Emails to vendors', 'Partnership outreach', 'Negotiations'
+  ],
+  'Public-facing writing': [
+    'Website copy', 'About page or bio', 'Testimonials and case studies'
+  ]
+};
+
+const CATEGORY_VISIBILITY = {
+  written: ['Client and customer writing', 'Internal team writing', 'Board and governance writing', 'Funder and donor writing', 'Vendor and partner writing', 'Public-facing writing'],
+  social: ['Marketing and outreach', 'Public-facing writing'],
+  both: Object.keys(CATEGORIES)
+};
+
+const SLIDER_HINTS = {
+  1: 'Closest people. No filter.',
+  2: 'Casual. Someone you know.',
+  3: 'Friendly with a purpose.',
+  4: 'Warm and professional.',
+  5: 'Standard professional.',
+  6: 'More formal. Business context.',
+  7: 'Making a case or a pitch.',
+  8: 'Formal presentations or reports.',
+  9: 'Grants, official submissions.',
+  10: 'Legal or institutional.'
+};
+
+const ILLUSTRATIVE_EXAMPLES = {
+  1: 'Running late, see you in 10',
+  2: 'Thanks for stopping by yesterday. Good to catch up.',
+  3: 'Hey hope your week is going well. Quick question on the meeting Friday.',
+  4: 'Sarah, hope you\'ve been getting some rest after the launch. I wanted to circle back on what we discussed.',
+  5: 'David, thanks for reaching out. I appreciate you considering me for this. Here\'s what I can offer.',
+  6: 'Linda, I want to acknowledge the concerns raised in your last email. Let me address each one directly.',
+  7: 'Thank you for sharing your perspective on this issue. I\'d like to offer some additional context that may be relevant.',
+  8: 'It appears that there is broad agreement on the core proposal. Several members have raised valid concerns about implementation.',
+  9: 'The organization has demonstrated measurable impact across three program areas during the reporting period.',
+  10: 'This agreement is entered into as of the date specified below by and between the parties identified herein.'
+};
+
+const state = {
+  current: 1,
+  client_name: '',
+  client_role: '',
+  client_email: '',
+  use_case: '',
+  selected_writing_types: [],
+  custom_writing_types: [],
+  format_definitions: {},
+  samples: [],
+  level_definitions: {}
+};
+
+function updateProgress() {
+  if (state.current === 7) return;
+  document.getElementById('progressFill').style.width = ((state.current - 1) / (TOTAL - 2) * 100) + '%';
+}
+
+function goTo(n) {
+  if (n === 3) buildCategories();
+  if (n === 4) buildFormatAccordions();
+  if (n === 5) updateSliderRange();
+  if (n === 6) { saveLevelDefs(); buildLevelDefAccordions(); }
+  hideAllErrors();
+  document.getElementById('step-' + state.current).classList.remove('active');
+  state.current = n;
+  document.getElementById('step-' + n).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function hideAllErrors() {
+  document.querySelectorAll('.inline-error').forEach(function(el) { el.classList.remove('visible'); });
+}
+
+function showError(id) {
+  document.getElementById(id).classList.add('visible');
+}
+
+function validateAndGo(from, to) {
+  if (from === 2) {
+    var name = document.getElementById('clientName').value.trim();
+    var role = document.getElementById('clientRole').value.trim();
+    var email = document.getElementById('clientEmail').value.trim();
+    var useCase = document.querySelector('input[name="useCase"]:checked');
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!name || !role || !email || !useCase || !emailRegex.test(email)) {
+      showError('error-page2');
+      return;
+    }
+    state.client_name = name;
+    state.client_role = role;
+    state.client_email = email;
+    state.use_case = useCase.value;
+  }
+  if (from === 5) {
+    if (state.samples.length === 0) {
+      showError('error-page5');
+      return;
+    }
+  }
+  goTo(to);
+}
+
+function validateAndSubmit() {
+  saveLevelDefs();
+  var usedLevels = getUsedLevels();
+  for (var i = 0; i < usedLevels.length; i++) {
+    var lvl = usedLevels[i];
+    if (!state.level_definitions[lvl] || !state.level_definitions[lvl].description) {
+      showError('error-page6');
+      return;
+    }
+  }
+  submitForm();
+}
+
+function getMaxLevel() {
+  return state.use_case === 'social' ? 7 : 10;
+}
+
+function getUsedLevels() {
+  var levels = {};
+  state.samples.forEach(function(s) { levels[s.level] = true; });
+  return Object.keys(levels).map(Number).sort(function(a, b) { return a - b; });
+}
+
+/* ── Accordion helper ── */
+function toggleAccordion(header) {
+  var acc = header.parentElement;
+  acc.classList.toggle('open');
+}
+
+function createAccordion(title, bodyContent) {
+  var acc = document.createElement('div');
+  acc.className = 'accordion';
+  var header = document.createElement('button');
+  header.className = 'accordion-header';
+  header.type = 'button';
+  header.innerHTML = '<span>' + esc(title) + '</span><span class="accordion-chevron">&#9654;</span>';
+  header.onclick = function() { toggleAccordion(this); };
+  acc.appendChild(header);
+  var body = document.createElement('div');
+  body.className = 'accordion-body';
+  if (typeof bodyContent === 'string') {
+    body.innerHTML = bodyContent;
+  } else {
+    body.appendChild(bodyContent);
+  }
+  acc.appendChild(body);
+  return acc;
+}
+
+/* ── Page 3: Categories ── */
+function buildCategories() {
+  var container = document.getElementById('categoriesContainer');
+  container.innerHTML = '';
+  var visible = CATEGORY_VISIBILITY[state.use_case] || CATEGORY_VISIBILITY.both;
+  visible.forEach(function(catName) {
+    var items = CATEGORIES[catName];
+    var bodyDiv = document.createElement('div');
+    items.forEach(function(item) {
+      var lbl = document.createElement('label');
+      lbl.className = 'checkbox-item';
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.value = item;
+      cb.dataset.category = catName;
+      if (state.selected_writing_types.indexOf(item) !== -1) cb.checked = true;
+      cb.onchange = function() { syncSelectedTypes(); };
+      lbl.appendChild(cb);
+      lbl.appendChild(document.createTextNode(item));
+      bodyDiv.appendChild(lbl);
+    });
+    container.appendChild(createAccordion(catName, bodyDiv));
+  });
+  renderCustomTypes();
+}
+
+function syncSelectedTypes() {
+  var checked = document.querySelectorAll('#categoriesContainer input[type="checkbox"]:checked');
+  state.selected_writing_types = Array.from(checked).map(function(cb) { return cb.value; });
+}
+
+function addCustomType() {
+  var inp = document.getElementById('customTypeInput');
+  var val = inp.value.trim();
+  if (!val) return;
+  if (state.custom_writing_types.indexOf(val) === -1) {
+    state.custom_writing_types.push(val);
+  }
+  inp.value = '';
+  renderCustomTypes();
+}
+
+function removeCustomType(val) {
+  state.custom_writing_types = state.custom_writing_types.filter(function(t) { return t !== val; });
+  renderCustomTypes();
+}
+
+function renderCustomTypes() {
+  var container = document.getElementById('customTypesList');
+  container.innerHTML = '';
+  state.custom_writing_types.forEach(function(t) {
+    var tag = document.createElement('span');
+    tag.className = 'custom-tag';
+    tag.innerHTML = esc(t) + ' <button onclick="removeCustomType(\'' + esc(t).replace(/'/g, "\\'") + '\')">&times;</button>';
+    container.appendChild(tag);
+  });
+}
+
+/* ── Page 4: Format Library ── */
+function buildFormatAccordions() {
+  syncSelectedTypes();
+  var container = document.getElementById('formatContainer');
+  container.innerHTML = '';
+  var allTypes = state.selected_writing_types.concat(state.custom_writing_types);
+  if (!allTypes.length) {
+    container.innerHTML = '<p class="body" style="color:var(--muted);font-style:italic;">No writing types selected yet. Go back and pick a few.</p>';
+    return;
+  }
+  allTypes.forEach(function(t) {
+    var bodyDiv = document.createElement('div');
+    var ta = document.createElement('textarea');
+    ta.style.minHeight = '80px';
+    ta.placeholder = 'How does this format usually open? What goes in the middle? How do you close? How long? Any words or phrases you avoid? Any words or phrases you use a lot?';
+    ta.value = state.format_definitions[t] || '';
+    ta.dataset.formatType = t;
+    bodyDiv.appendChild(ta);
+    container.appendChild(createAccordion(t, bodyDiv));
+  });
+}
+
+function saveFormatDefs() {
+  document.querySelectorAll('#formatContainer textarea[data-format-type]').forEach(function(ta) {
+    state.format_definitions[ta.dataset.formatType] = ta.value.trim();
+  });
+}
+
+/* ── Page 5: Samples ── */
+function updateSliderRange() {
+  var max = getMaxLevel();
+  var slider = document.getElementById('levelSlider');
+  slider.max = max;
+  if (parseInt(slider.value) > max) slider.value = max;
+  document.getElementById('sliderMaxLabel').textContent = max + '. Most formal';
+  updateSlider();
+}
+
+function updateSlider() {
+  var val = parseInt(document.getElementById('levelSlider').value);
+  document.getElementById('sliderNum').textContent = val;
+  document.getElementById('sliderDesc').textContent = SLIDER_HINTS[val] || '';
+}
+
+function addSample() {
+  var text = document.getElementById('sampleText').value.trim();
+  if (!text) return;
+  var context = document.getElementById('sampleContext').value.trim();
+  var recipient = document.getElementById('sampleRecipient').value.trim();
+  var level = parseInt(document.getElementById('levelSlider').value);
+  state.samples.push({ text: text, context: context, recipient: recipient, level: level, id: Date.now() });
+  renderSamples();
+  clearSampleForm();
+  hideAllErrors();
+}
+
+function clearSampleForm() {
+  document.getElementById('sampleText').value = '';
+  document.getElementById('sampleContext').value = '';
+  document.getElementById('sampleRecipient').value = '';
+  document.getElementById('levelSlider').value = 5;
+  updateSlider();
+}
+
+function deleteSample(id) {
+  state.samples = state.samples.filter(function(s) { return s.id !== id; });
+  renderSamples();
+}
+
+function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function renderSamples() {
+  var el = document.getElementById('samplesList');
+  if (!state.samples.length) {
+    el.innerHTML = '<div class="empty-state">No samples yet. Paste your first one below.</div>';
+    return;
+  }
+  el.innerHTML = state.samples.map(function(s) {
+    return '<div class="sample-card">' +
+      '<button class="sample-card-delete" onclick="deleteSample(' + s.id + ')">&#10005;</button>' +
+      '<div class="sample-card-meta">Level ' + s.level + (s.context ? '&nbsp;&nbsp;&middot;&nbsp;&nbsp;' + esc(s.context) : '') + (s.recipient ? '&nbsp;&nbsp;&middot;&nbsp;&nbsp;To: ' + esc(s.recipient) : '') + '</div>' +
+      '<div class="sample-card-text">' + esc(s.text) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+/* ── Page 6: Level Definitions ── */
+function buildLevelDefAccordions() {
+  var container = document.getElementById('levelDefsContainer');
+  container.innerHTML = '';
+  var usedLevels = getUsedLevels();
+  if (!usedLevels.length) {
+    container.innerHTML = '<p class="body" style="color:var(--muted);font-style:italic;">No samples added yet. Go back and add samples first.</p>';
+    return;
+  }
+  usedLevels.forEach(function(lvl) {
+    var bodyDiv = document.createElement('div');
+
+    // Illustrative example
+    if (ILLUSTRATIVE_EXAMPLES[lvl]) {
+      var illus = document.createElement('div');
+      illus.className = 'level-illustrative';
+      illus.textContent = '"' + ILLUSTRATIVE_EXAMPLES[lvl] + '"';
+      bodyDiv.appendChild(illus);
+    }
+
+    // Read-only samples at this level
+    var levelSamples = state.samples.filter(function(s) { return s.level === lvl; });
+    levelSamples.forEach(function(s) {
+      var card = document.createElement('div');
+      card.className = 'level-sample-readonly';
+      var meta = document.createElement('div');
+      meta.className = 'level-sample-readonly-meta';
+      meta.textContent = (s.context || 'Sample') + (s.recipient ? ' / To: ' + s.recipient : '');
+      card.appendChild(meta);
+      var text = document.createElement('div');
+      text.textContent = s.text;
+      card.appendChild(text);
+      bodyDiv.appendChild(card);
+    });
+
+    // Required textarea
+    var lbl1 = document.createElement('label');
+    lbl1.textContent = 'Describe Level ' + lvl + ' in your own words';
+    lbl1.style.marginTop = '14px';
+    bodyDiv.appendChild(lbl1);
+    var ta1 = document.createElement('textarea');
+    ta1.style.minHeight = '80px';
+    ta1.placeholder = 'Who do you write to, how do you sound, what makes this level distinct?';
+    ta1.dataset.levelNum = lvl;
+    ta1.dataset.levelField = 'description';
+    ta1.value = (state.level_definitions[lvl] && state.level_definitions[lvl].description) || '';
+    bodyDiv.appendChild(ta1);
+
+    // Optional textarea
+    var lbl2 = document.createElement('label');
+    lbl2.textContent = 'Anything else specific to this level?';
+    bodyDiv.appendChild(lbl2);
+    var ta2 = document.createElement('textarea');
+    ta2.style.minHeight = '60px';
+    ta2.placeholder = 'Optional';
+    ta2.dataset.levelNum = lvl;
+    ta2.dataset.levelField = 'notes';
+    ta2.value = (state.level_definitions[lvl] && state.level_definitions[lvl].notes) || '';
+    bodyDiv.appendChild(ta2);
+
+    container.appendChild(createAccordion('Level ' + lvl, bodyDiv));
+  });
+}
+
+function saveLevelDefs() {
+  document.querySelectorAll('#levelDefsContainer textarea[data-level-num]').forEach(function(ta) {
+    var lvl = parseInt(ta.dataset.levelNum);
+    if (!state.level_definitions[lvl]) state.level_definitions[lvl] = { description: '', notes: '' };
+    state.level_definitions[lvl][ta.dataset.levelField] = ta.value.trim();
+  });
+}
+
+/* ── Output builders ── */
+function buildVoiceProfile() {
+  var name = state.client_name || 'this person';
+  var role = state.client_role;
+  var email = state.client_email;
+  var useCase = state.use_case;
+  var allTypes = state.selected_writing_types.concat(state.custom_writing_types);
+  var formats = state.format_definitions;
+  var samples = state.samples;
+  var defs = state.level_definitions;
+
+  var p = '';
+  p += '════════════════════════════════════════\n';
+  p += 'VOICE STUDIO PROFILE\n';
+  p += '════════════════════════════════════════\n\n';
+  p += 'NAME: ' + name + '\n';
+  if (role) p += 'ROLE: ' + role + '\n';
+  if (email) p += 'EMAIL: ' + email + '\n';
+  p += 'USE CASE: ' + useCase + '\n';
+  p += 'BUILT: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '\n\n';
+
+  p += '────────────────────────────────────────\n';
+  p += 'WRITING TYPES\n';
+  p += '────────────────────────────────────────\n';
+  allTypes.length ? allTypes.forEach(function(t) { p += '  . ' + t + '\n'; }) : p += '  (none selected)\n';
+  p += '\n';
+
+  p += '────────────────────────────────────────\n';
+  p += 'FORMAT LIBRARY\n';
+  p += '────────────────────────────────────────\n\n';
+  var withContent = allTypes.filter(function(t) { return formats[t]; });
+  if (!withContent.length) {
+    p += '  (no format descriptions provided)\n\n';
+  } else {
+    withContent.forEach(function(t) { p += t.toUpperCase() + '\n' + formats[t] + '\n\n'; });
+  }
+
+  p += '────────────────────────────────────────\n';
+  p += 'LEVEL DEFINITIONS\n';
+  p += '────────────────────────────────────────\n';
+  var usedLevels = getUsedLevels();
+  if (usedLevels.length) {
+    usedLevels.forEach(function(lvl) {
+      var d = defs[lvl];
+      if (d && d.description) {
+        p += '  Level ' + lvl + ': ' + d.description + '\n';
+        if (d.notes) p += '    Notes: ' + d.notes + '\n';
+      }
+    });
+  } else {
+    p += '  (not defined)\n';
+  }
+  p += '\n';
+
+  p += '────────────────────────────────────────\n';
+  p += 'VOICE SAMPLES (' + samples.length + ')\n';
+  p += '────────────────────────────────────────\n\n';
+  if (!samples.length) {
+    p += '  (no samples added)\n';
+  } else {
+    usedLevels.forEach(function(lvl) {
+      var levelSamples = samples.filter(function(s) { return s.level === lvl; });
+      levelSamples.forEach(function(s, i) {
+        p += 'SAMPLE (Level ' + s.level + ')\n';
+        if (s.context) p += 'Type: ' + s.context + '\n';
+        if (s.recipient) p += 'To: ' + s.recipient + '\n';
+        p += '\n' + s.text + '\n\n---\n\n';
+      });
+    });
+  }
+
+  p += '════════════════════════════════════════\n';
+  p += 'END OF VOICE STUDIO PROFILE\n';
+  p += '════════════════════════════════════════\n';
+  return p;
+}
+
+function xmlEsc(t) {
+  return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function buildSystemPromptXML() {
+  var firstName = (state.client_name || 'this person').split(' ')[0];
+  var allTypes = state.selected_writing_types.concat(state.custom_writing_types);
+  var formats = state.format_definitions;
+  var samples = state.samples;
+  var defs = state.level_definitions;
+  var maxLevel = getMaxLevel();
+  var usedLevels = getUsedLevels();
+
+  var x = '';
+
+  // Role
+  x += '<role>You are ' + xmlEsc(firstName) + '\'s writing assistant. Your only job is to write in ' + xmlEsc(firstName) + '\'s voice.</role>\n\n';
+
+  // Context
+  x += '<context>\n';
+  x += '  <name>' + xmlEsc(state.client_name) + '</name>\n';
+  x += '  <role>' + xmlEsc(state.client_role) + '</role>\n';
+  x += '  <use_case>' + xmlEsc(state.use_case) + '</use_case>\n';
+  x += '</context>\n\n';
+
+  // How it works
+  var rangeText = maxLevel === 7 ? '1 to 7' : '1 to 10';
+  x += '<how_it_works>' + xmlEsc(firstName) + ' will give you three things: a number from ' + rangeText + ', who they\'re writing to, and what they want to say. You write it. That\'s the whole job.\n';
+  x += '  <example>5, email to my accountant about moving our meeting</example>\n';
+  x += '  <example>2, text to my cousin just checking in</example>\n';
+  x += '  <example>7, LinkedIn post about why I started my business</example>\n';
+  x += '</how_it_works>\n\n';
+
+  // Writing categories
+  x += '<writing_categories>\n';
+  var categorized = {};
+  state.selected_writing_types.forEach(function(t) {
+    var cat = null;
+    Object.keys(CATEGORIES).forEach(function(catName) {
+      if (CATEGORIES[catName].indexOf(t) !== -1) cat = catName;
+    });
+    if (cat) {
+      if (!categorized[cat]) categorized[cat] = [];
+      categorized[cat].push(t);
+    }
+  });
+  Object.keys(categorized).forEach(function(cat) {
+    x += '  <category name="' + xmlEsc(cat) + '">\n';
+    categorized[cat].forEach(function(t) {
+      x += '    <type>' + xmlEsc(t) + '</type>\n';
+    });
+    x += '  </category>\n';
+  });
+  if (state.custom_writing_types.length) {
+    x += '  <custom>\n';
+    state.custom_writing_types.forEach(function(t) {
+      x += '    <type>' + xmlEsc(t) + '</type>\n';
+    });
+    x += '  </custom>\n';
+  }
+  x += '</writing_categories>\n\n';
+
+  // Format rules
+  var withContent = allTypes.filter(function(t) { return formats[t]; });
+  if (withContent.length) {
+    x += '<format_rules>\n';
+    withContent.forEach(function(t) {
+      x += '  <format type="' + xmlEsc(t) + '">\n  ' + xmlEsc(formats[t]) + '\n  </format>\n';
+    });
+    x += '</format_rules>\n\n';
+  }
+
+  // Formality scale
+  x += '<formality_scale>\n';
+  usedLevels.forEach(function(lvl) {
+    var d = defs[lvl] || {};
+    x += '  <level number="' + lvl + '">\n';
+    if (d.description) x += '    <description>' + xmlEsc(d.description) + '</description>\n';
+    if (d.notes) x += '    <notes>' + xmlEsc(d.notes) + '</notes>\n';
+    var levelSamples = samples.filter(function(s) { return s.level === lvl; });
+    if (levelSamples.length) {
+      x += '    <samples>\n';
+      levelSamples.forEach(function(s, i) {
+        x += '      <sample number="' + (i + 1) + '"';
+        if (s.context) x += ' context="' + xmlEsc(s.context) + '"';
+        if (s.recipient) x += ' recipient="' + xmlEsc(s.recipient) + '"';
+        x += '>\n      ' + xmlEsc(s.text) + '\n      </sample>\n';
+      });
+      x += '    </samples>\n';
+    }
+    x += '  </level>\n';
+  });
+  x += '</formality_scale>\n\n';
+
+  // Voice rules
+  x += '<voice_rules>\n';
+  x += '  <rule>Write in ' + xmlEsc(firstName) + '\'s voice, not in generic professional language.</rule>\n';
+  x += '  <rule>Never use filler phrases like "I hope this finds you well" or "Certainly!" or "I\'d be happy to help."</rule>\n';
+  x += '  <rule>No em dashes. Use a period or restructure the sentence.</rule>\n';
+  x += '  <rule>Active voice always. "I will send it" not "It will be sent."</rule>\n';
+  x += '  <rule>Vary sentence length. Short and long together.</rule>\n';
+  x += '  <rule>No triplets. Not "Fast. Simple. Effective." Write a sentence.</rule>\n';
+  x += '  <rule>Close with an open door, not a pitch.</rule>\n';
+  x += '  <rule>Never add a signature. ' + xmlEsc(firstName) + ' handles that.</rule>\n';
+  x += '</voice_rules>\n\n';
+
+  // Output rules
+  x += '<output_rules>\n';
+  x += '  <rule>Deliver only the finished writing. No preamble, no explanation, no "here\'s a draft."</rule>\n';
+  x += '  <rule>If something is unclear, ask one question before writing. Not multiple.</rule>\n';
+  x += '  <rule>Check your work before presenting it. Wrong level, wrong voice, wrong format means rewrite.</rule>\n';
+  x += '</output_rules>\n';
+
+  return x;
+}
+
+/* ── Submission ── */
+/* DEBUG: Remove before production */
+function debugPreview() {
+  saveLevelDefs();
+  document.getElementById('debugProfile').textContent = buildVoiceProfile();
+  document.getElementById('debugPrompt').textContent = buildSystemPromptXML();
+  document.getElementById('debugModal').style.display = 'block';
+}
+
+function submitForm() {
+  var profile = buildVoiceProfile();
+  var prompt = buildSystemPromptXML();
+
+  var formData = new URLSearchParams();
+  formData.append('form-name', 'voice-studio-submission');
+  formData.append('client-name', state.client_name);
+  formData.append('client-role', state.client_role);
+  formData.append('client-email', state.client_email);
+  formData.append('use-case', state.use_case);
+  formData.append('voice-profile', profile);
+  formData.append('system-prompt', prompt);
+  formData.append('bot-field', '');
+
+  fetch('/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData.toString()
+  }).then(function(response) {
+    if (response.ok) {
+      goTo(7);
+    } else {
+      throw new Error('Submission failed');
+    }
+  }).catch(function() {
+    var errorEl = document.getElementById('error-page6');
+    errorEl.innerHTML = 'Something went wrong. Please try again, or email your submission directly to <a href="mailto:ivtownsend.michelle@gmail.com" style="color:var(--accent);">ivtownsend.michelle@gmail.com</a>.';
+    errorEl.classList.add('visible');
+  });
+}
+
+/* ── Init ── */
+renderSamples();
+updateSlider();
+updateProgress();
+</script>
+</body>
+</html>
