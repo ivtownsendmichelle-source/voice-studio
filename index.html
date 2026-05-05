@@ -79,6 +79,26 @@
   .numbers-progress { margin-top: 16px; padding: 12px; background: rgba(27,58,45,0.06); border-radius: 4px; font-size: 0.85rem; color: var(--muted); }
   .numbers-progress.ready { background: rgba(200,168,80,0.1); color: var(--accent); }
 
+  /* Number cards (v2.5 captured/designed toggle) */
+  .number-card { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 16px 18px; margin-bottom: 14px; }
+  .number-card-header { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: var(--accent); margin-bottom: 6px; }
+  .number-type-toggle { display: flex; flex-direction: column; gap: 4px; padding: 6px 0 4px; margin-bottom: 8px; }
+  .number-type-toggle label { margin: 0; padding: 6px 0; text-transform: none; letter-spacing: 0; font-size: 0.9rem; color: var(--ink); cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 400; }
+  .number-type-toggle input[type="radio"] { accent-color: var(--accent); }
+  .number-fields { display: none; }
+  .number-fields.active { display: block; }
+  .number-fields label { margin-top: 14px; }
+  .number-fields .field-help { font-size: 0.82rem; color: var(--muted); line-height: 1.55; margin: 4px 0 8px; }
+  .example-block { background: #faf7f2; border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; margin-top: 10px; position: relative; }
+  .example-block .remove-example { position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--rule); cursor: pointer; font-size: 0.95rem; }
+  .example-block .remove-example:hover { color: var(--error); }
+  .example-block label { margin-top: 8px; font-size: 0.72rem; }
+  .example-block label:first-child { margin-top: 0; }
+  .add-example-btn { margin-top: 8px; padding: 8px 14px; background: transparent; border: 1px solid var(--rule); border-radius: 4px; font-size: 0.82rem; color: var(--muted); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .add-example-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .add-example-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .examples-warn { font-size: 0.78rem; color: var(--muted); font-style: italic; margin-top: 6px; }
+
   /* Read-only Numbers display */
   .numbers-display { background: white; border: 1px solid var(--rule); border-radius: 6px; padding: 16px; margin-bottom: 16px; }
   .number-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--rule); font-size: 0.92rem; }
@@ -118,12 +138,18 @@
 <!-- Netlify Forms hidden form for bot detection -->
 <form name="voice-studio-submission" netlify netlify-honeypot="bot-field" hidden>
   <input type="text" name="client-name" />
-  <input type="text" name="client-role" />
   <input type="email" name="client-email" />
+  <input type="text" name="client-business" />
+  <input type="text" name="client-what-you-do" />
+  <input type="text" name="client-who-you-serve" />
+  <input type="text" name="client-how-long" />
+  <input type="text" name="client-one-thing" />
   <input type="text" name="use-case" />
   <textarea name="voice-profile"></textarea>
   <textarea name="voice-profile-markdown"></textarea>
   <textarea name="numbers"></textarea>
+  <textarea name="number-types"></textarea>
+  <textarea name="designed-intent"></textarea>
   <textarea name="bad-output-examples"></textarea>
   <textarea name="personal-characteristics"></textarea>
   <input type="text" name="bot-field" />
@@ -142,36 +168,31 @@
     <p class="body">Your writing changes depending on who you are talking to. A funder email reads differently than a board memo. A client thank-you reads differently than a vendor request. An Instagram caption reads differently than a LinkedIn post. Voice Studio captures that range. You define what each level of formality means for you. You describe how each format works.</p>
     <p class="body">When you finish, you will have a complete voice profile ready to share with AI writing assistants. You get two versions: one for direct paste into AI projects, and one XML file for system integrations.</p>
     <p class="body">This walks you through it in nine steps. There are no wrong answers. The more honest your samples, the better it works.</p>
+    <p class="body">Voice Studio captures voice you already have, from writing you've already done. For Numbers where you want to develop a new voice (a platform you haven't written for yet), you can flag those and we will design that voice for you using the rest of your profile.</p>
     <div class="btn-row">
       <button class="btn btn-primary" onclick="goTo(2)">Let us build it</button>
     </div>
   </div>
 
-  <!-- PAGE 2: IDENTIFICATION + USE CASE -->
+  <!-- PAGE 2: IDENTIFICATION -->
   <div class="step" id="step-2">
     <div class="step-label">Step 1 of 9</div>
     <h2>First, who are we building this for?</h2>
+    <p class="body">Tell me about yourself. The more I know, the better the voice profile.</p>
     <label>Name</label>
     <input type="text" id="clientName" />
-    <label>Role</label>
-    <input type="text" id="clientRole" />
     <label>Email</label>
     <input type="email" id="clientEmail" />
-    <label style="margin-bottom: 10px;">What are you using Voice Studio for?</label>
-    <div class="radio-group">
-      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
-        <input type="radio" name="useCase" value="written" />
-        Written communications (emails, proposals, board memos, grants)
-      </label>
-      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
-        <input type="radio" name="useCase" value="social" />
-        Social media and brand voice (Facebook, Instagram, LinkedIn, content)
-      </label>
-      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
-        <input type="radio" name="useCase" value="both" />
-        Both. Note: this version is longer because it captures voice across both contexts.
-      </label>
-    </div>
+    <label>What's your business or organization called?</label>
+    <input type="text" id="clientBusiness" placeholder="Sole proprietor or freelancer? Use your name plus what you do. Example: Jane Smith Coaching." />
+    <label>What do you do, in one sentence?</label>
+    <input type="text" id="clientWhatYouDo" placeholder="Say it like you'd say it to a neighbor. Example: I help small farms set up roadside stands." />
+    <label>Who do you serve?</label>
+    <input type="text" id="clientWhoYouServe" placeholder="Describe them like a real person. Example: First-time business owners in rural communities." />
+    <label>How long have you been doing this?</label>
+    <input type="text" id="clientHowLong" placeholder="A year, ten years, since I was a kid. Whatever feels true." />
+    <label>What's one thing you wish people understood about your work?</label>
+    <input type="text" id="clientOneThing" placeholder="Example: That this is craft, not commodity." />
     <div class="inline-error" id="error-page2" role="alert" aria-live="polite">Please fill in all fields to continue.</div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="goTo(1)">Back</button>
@@ -179,20 +200,36 @@
     </div>
   </div>
 
-  <!-- PAGE 3: WRITING CATEGORIES -->
+  <!-- PAGE 3: WRITING CATEGORIES + USE CASE -->
   <div class="step" id="step-3">
     <div class="step-label">Step 2 of 9</div>
     <h2>What kinds of writing do you need help with?</h2>
-    <p class="body">Pick everything that applies. Add your own if something is not listed.</p>
-    <div id="categoriesContainer"></div>
+    <p class="body">Pick everything that applies. Add your own if something isn't listed.</p>
+    <label style="margin-bottom: 10px;">What are you using Voice Studio for?</label>
+    <div class="radio-group" id="useCaseGroup">
+      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
+        <input type="radio" name="useCase" value="written" onchange="onUseCaseChange()" />
+        Written communications (emails, proposals, board memos, grants)
+      </label>
+      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
+        <input type="radio" name="useCase" value="social" onchange="onUseCaseChange()" />
+        Social media and brand voice (Facebook, Instagram, LinkedIn, content)
+      </label>
+      <label class="radio-option" style="margin: 0; text-transform: none; font-size: 0.92rem; letter-spacing: 0;">
+        <input type="radio" name="useCase" value="both" onchange="onUseCaseChange()" />
+        Both. Note: this version is longer because it captures voice across both contexts.
+      </label>
+    </div>
+    <div id="categoriesContainer" style="margin-top: 24px;"></div>
     <div class="custom-add-row">
       <input type="text" id="customTypeInput" placeholder="Add your own..." onkeydown="if(event.key==='Enter')addCustomType()" />
       <button onclick="addCustomType()">+ Add</button>
     </div>
     <div class="custom-items" id="customTypesList"></div>
+    <div class="inline-error" id="error-page3" role="alert" aria-live="polite">Pick a use case and at least one writing type to continue.</div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="goTo(2)">Back</button>
-      <button class="btn btn-primary" onclick="goTo(4)">Next</button>
+      <button class="btn btn-primary" onclick="validateAndGo(3, 4)">Next</button>
     </div>
   </div>
 
@@ -213,23 +250,18 @@
     </div>
   </div>
 
-  <!-- PAGE 5: DEFINE YOUR NUMBERS -->
+  <!-- PAGE 5: DEFINE YOUR NUMBERS (with captured/designed toggle, v2.5) -->
   <div class="step" id="step-5">
     <div class="step-label">Step 4 of 9</div>
     <h2>Define your Numbers.</h2>
     <p class="body">You will not use 1-10 formality levels. Instead, you define what each number means to you. What context label is important to you? "Professional with a friend" or "corporate heavy" or "casual but clear"? You pick the labels. Fill in at least 5.</p>
+    <p class="body">For each Number, tell us whether you have samples to capture an existing voice, or whether you want to develop a new voice you don't yet have.</p>
     <p class="body">Example: 1 = Texting my best friend, 3 = Email to a client, 5 = Board meeting, 7 = Formal grant, 9 = Legal document.</p>
-    <div class="numbers-grid">
-      <div class="numbers-row">
-        <div><label style="margin-top: 0;">Number</label></div>
-        <div><label style="margin-top: 0;">Your context for this number</label></div>
-      </div>
-      <div id="numbersInputContainer"></div>
-    </div>
-    <div class="numbers-progress" id="numbersProgress">Fill in at least 5 numbers to continue.</div>
+    <div id="numbersInputContainer"></div>
+    <div class="numbers-progress" id="numbersProgress">Fill in at least 5 Numbers to continue.</div>
     <div class="inline-error" id="error-page5" role="alert" aria-live="polite">You must define at least 5 Numbers before continuing.</div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="goTo(4)">Back</button>
+      <button class="btn btn-ghost" onclick="saveNumbers(); goTo(4)">Back</button>
       <button class="btn btn-primary" onclick="validateAndGo(5, 6)">Next</button>
     </div>
   </div>
@@ -238,29 +270,41 @@
   <div class="step" id="step-6">
     <div class="step-label">Step 5 of 9</div>
     <h2>Now paste in your samples.</h2>
-    <p class="body">Find something you actually wrote. A text, an email, a post. Copy it and paste it here. Then tell us what it was, who it was for, and which Number it matches.</p>
-    <p class="body">Add as many as you want. Three samples at any Number you actually use is a good target. The more you add, the better this works.</p>
-    <div id="samplesList"></div>
-    <div class="sample-entry-box">
-      <label>Paste your sample here</label>
-      <textarea id="sampleText" placeholder="Paste the actual text you wrote..."></textarea>
-      <label>What was this?</label>
-      <input type="text" id="sampleContext" placeholder="e.g. Email to my landlord, text to my sister, Facebook post about the farm..." />
-      <label>Who were you writing to?</label>
-      <input type="text" id="sampleRecipient" placeholder="e.g. My business partner, a new customer, my mom..." />
-      <label>Which Number does this match?</label>
-      <select id="numberDropdown">
-        <option value="">Select a Number</option>
-      </select>
+    <div id="allDesignedNotice" style="display:none;">
+      <div class="callout">
+        All your Numbers are designed. We'll capture intent for each and Karen will synthesize from your profile. You can move to the next step.
+      </div>
       <div class="btn-row">
-        <button class="btn btn-ghost" onclick="clearSampleForm()">Clear</button>
-        <button class="btn btn-primary" onclick="addSample()">Add this sample</button>
+        <button class="btn btn-ghost" onclick="goTo(5)">Back</button>
+        <button class="btn btn-primary" onclick="validateAndGo(6, 7)">Next</button>
       </div>
     </div>
-    <div class="inline-error" id="error-page6" role="alert" aria-live="polite">Add at least one sample to continue.</div>
-    <div class="btn-row">
-      <button class="btn btn-ghost" onclick="saveFormatDefs(); goTo(5)">Back</button>
-      <button class="btn btn-primary" onclick="validateAndGo(6, 7)">I am done adding samples. Next.</button>
+    <div id="capturedSampleSection">
+      <p class="body">Find something you actually wrote. A text, an email, a post. Copy it and paste it here. Then tell us what it was, who it was for, and which Number it matches.</p>
+      <p class="body">Add as many as you want. Three samples at any Number you actually use is a good target. The more you add, the better this works.</p>
+      <p class="body" id="designedSkipNote" style="display:none; font-style: italic; color: var(--muted);">Numbers you marked "I want to develop this voice" don't need samples. They're not in the dropdown below.</p>
+      <div id="samplesList"></div>
+      <div class="sample-entry-box">
+        <label>Paste your sample here</label>
+        <textarea id="sampleText" placeholder="Paste the actual text you wrote..."></textarea>
+        <label>What was this?</label>
+        <input type="text" id="sampleContext" placeholder="e.g. Email to my landlord, text to my sister, Facebook post about the farm..." />
+        <label>Who were you writing to?</label>
+        <input type="text" id="sampleRecipient" placeholder="e.g. My business partner, a new customer, my mom..." />
+        <label>Which Number does this match?</label>
+        <select id="numberDropdown">
+          <option value="">Select a Number</option>
+        </select>
+        <div class="btn-row">
+          <button class="btn btn-ghost" onclick="clearSampleForm()">Clear</button>
+          <button class="btn btn-primary" onclick="addSample()">Add this sample</button>
+        </div>
+      </div>
+      <div class="inline-error" id="error-page6" role="alert" aria-live="polite">Add at least one sample to continue.</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="saveFormatDefs(); goTo(5)">Back</button>
+        <button class="btn btn-primary" onclick="validateAndGo(6, 7)">I am done adding samples. Next.</button>
+      </div>
     </div>
   </div>
 
@@ -314,6 +358,9 @@
     <div class="step-label">Submission received</div>
     <div class="thankyou-box">
       Thank you. Your voice profile is ready. You can copy the files below and use them immediately. I will also read through your submission and email you within 2 business days with any follow-up questions.
+    </div>
+    <div class="callout" style="margin-top: 16px;">
+      Your voice profile is ready. If you marked any Numbers as "I want to develop this voice," those sections are placeholders. Michelle will synthesize them using your full profile and send you the completed version.
     </div>
     <div class="output-section">
       <div class="output-header">
@@ -396,13 +443,24 @@ const PERSONAL_CHARACTERISTICS_QUESTIONS = [
 const state = {
   current: 1,
   client_name: '',
-  client_role: '',
   client_email: '',
+  client_business: '',
+  client_what_you_do: '',
+  client_who_you_serve: '',
+  client_how_long: '',
+  client_one_thing: '',
   use_case: '',
   selected_writing_types: [],
   custom_writing_types: [],
   format_definitions: {},
   numbers: {},
+  // number_types: per-Number 'captured' or 'designed'. Defaults to 'captured'.
+  number_types: {},
+  // captured Numbers: longer description collected on Page 5
+  number_descriptions: {},
+  // designed Numbers: full intent block collected on Page 5
+  // shape: { audience, want_known_for, admired: [{text, what}], avoided: [{text, what}], notes }
+  designed_intent: {},
   samples: [],
   number_definitions: {},
   bad_output_examples_checked: [],
@@ -442,29 +500,58 @@ function showError(id) {
 function validateAndGo(from, to) {
   if (from === 2) {
     var name = document.getElementById('clientName').value.trim();
-    var role = document.getElementById('clientRole').value.trim();
     var email = document.getElementById('clientEmail').value.trim();
-    var useCase = document.querySelector('input[name="useCase"]:checked');
+    var business = document.getElementById('clientBusiness').value.trim();
+    var whatYouDo = document.getElementById('clientWhatYouDo').value.trim();
+    var whoYouServe = document.getElementById('clientWhoYouServe').value.trim();
+    var howLong = document.getElementById('clientHowLong').value.trim();
+    var oneThing = document.getElementById('clientOneThing').value.trim();
     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!name || !role || !email || !useCase || !emailRegex.test(email)) {
+    if (!name || !email || !business || !whatYouDo || !whoYouServe || !howLong || !oneThing || !emailRegex.test(email)) {
       showError('error-page2');
       return;
     }
     state.client_name = name;
-    state.client_role = role;
     state.client_email = email;
+    state.client_business = business;
+    state.client_what_you_do = whatYouDo;
+    state.client_who_you_serve = whoYouServe;
+    state.client_how_long = howLong;
+    state.client_one_thing = oneThing;
+  }
+  if (from === 3) {
+    var useCase = document.querySelector('input[name="useCase"]:checked');
+    syncSelectedTypes();
+    var totalTypes = state.selected_writing_types.length + state.custom_writing_types.length;
+    if (!useCase || totalTypes === 0) {
+      showError('error-page3');
+      return;
+    }
     state.use_case = useCase.value;
   }
   if (from === 5) {
     saveNumbers();
     var filledCount = Object.keys(state.numbers).filter(function(k) { return state.numbers[k] && state.numbers[k].trim(); }).length;
     if (filledCount < 5) {
-      showError('error-page5');
+      var err5 = document.getElementById('error-page5');
+      err5.textContent = 'You must define at least 5 Numbers before continuing.';
+      err5.classList.add('visible');
+      return;
+    }
+    // Per-Number validation: captured needs description; designed needs full intent
+    var perNumberErrors = validateNumberRowFields();
+    if (perNumberErrors.length > 0) {
+      var errEl = document.getElementById('error-page5');
+      errEl.textContent = perNumberErrors[0];
+      errEl.classList.add('visible');
       return;
     }
   }
   if (from === 6) {
-    if (state.samples.length === 0) {
+    var hasCapturedFor6 = Object.keys(state.numbers).some(function(k) {
+      return state.numbers[k] && state.numbers[k].trim() && (state.number_types[k] || 'captured') === 'captured';
+    });
+    if (hasCapturedFor6 && state.samples.length === 0) {
       showError('error-page6');
       return;
     }
@@ -491,16 +578,58 @@ function validateAndGo(from, to) {
   }
   if (from === 9) {
     saveNumberDefs();
-    var usedNumbers = getUsedNumbers();
-    for (var i = 0; i < usedNumbers.length; i++) {
-      var num = usedNumbers[i];
-      if (!state.number_definitions[num] || !state.number_definitions[num].description) {
-        showError('error-page9');
-        return;
+    // No required fields on the review page in v2.5. Description and intent
+    // are validated on Page 5; final_note here is optional. The page9 inline
+    // error stays available if future required fields are added.
+  }
+  goTo(to);
+}
+
+function onUseCaseChange() {
+  var useCase = document.querySelector('input[name="useCase"]:checked');
+  if (!useCase) return;
+  state.use_case = useCase.value;
+  // Preserve existing selections when rebuilding
+  syncSelectedTypes();
+  buildCategories();
+}
+
+// Validate per-row Number fields based on captured/designed type. Returns
+// an array of error messages (empty if all good).
+function validateNumberRowFields() {
+  var errors = [];
+  for (var i = 1; i <= 10; i++) {
+    var label = state.numbers[i];
+    if (!label || !label.trim()) continue;
+    var ntype = state.number_types[i] || 'captured';
+    if (ntype === 'captured') {
+      var desc = state.number_descriptions[i];
+      if (!desc || !desc.trim()) {
+        errors.push('Number ' + i + ' needs a longer description.');
+      }
+    } else {
+      var intent = state.designed_intent[i] || {};
+      if (!intent.audience || !intent.audience.trim()) {
+        errors.push('Number ' + i + ': fill in the audience for this designed voice.');
+        continue;
+      }
+      if (!intent.want_known_for || !intent.want_known_for.trim()) {
+        errors.push('Number ' + i + ': fill in what you want to be known for.');
+        continue;
+      }
+      var admired = (intent.admired || []).filter(function(e) { return e.text && e.text.trim() && e.what && e.what.trim(); });
+      if (admired.length < 1) {
+        errors.push('Number ' + i + ': add at least one admired voice with a note about what you admire.');
+        continue;
+      }
+      var avoided = (intent.avoided || []).filter(function(e) { return e.text && e.text.trim() && e.what && e.what.trim(); });
+      if (avoided.length < 1) {
+        errors.push('Number ' + i + ': add at least one voice to avoid with a note about what bothers you.');
+        continue;
       }
     }
   }
-  goTo(to);
+  return errors;
 }
 
 function validateAndSubmit() {
@@ -514,44 +643,337 @@ function buildNumbersInputs() {
   var container = document.getElementById('numbersInputContainer');
   container.innerHTML = '';
   for (var i = 1; i <= 10; i++) {
-    var row = document.createElement('div');
-    row.className = 'numbers-row';
-    
-    var numDiv = document.createElement('div');
-    var numLabel = document.createElement('label');
-    numLabel.textContent = 'Number ' + i;
-    numLabel.style.marginTop = '6px';
-    var numInput = document.createElement('input');
-    numInput.type = 'text';
-    numInput.value = '';
-    numInput.placeholder = 'e.g. Texting my best friend';
-    numInput.dataset.number = i;
-    numInput.onchange = function() { updateNumberProgress(); };
-    numInput.oninput = function() { updateNumberProgress(); };
-    numDiv.appendChild(numLabel);
-    numDiv.appendChild(numInput);
-    
-    var ctxDiv = document.createElement('div');
-    ctxDiv.style.gridColumn = '2';
-    var ctxInput = document.createElement('input');
-    ctxInput.type = 'text';
-    ctxInput.value = '';
-    ctxInput.placeholder = 'Optional context or notes';
-    ctxInput.dataset.numberContext = i;
-    ctxDiv.appendChild(ctxInput);
-    
-    row.appendChild(numDiv);
-    row.appendChild(ctxDiv);
-    container.appendChild(row);
+    container.appendChild(buildNumberCard(i));
   }
 }
 
-function saveNumbers() {
-  state.numbers = {};
-  document.querySelectorAll('#numbersInputContainer input[data-number]').forEach(function(inp) {
-    var num = inp.dataset.number;
-    state.numbers[num] = inp.value.trim();
+function buildNumberCard(i) {
+  var card = document.createElement('div');
+  card.className = 'number-card';
+  card.dataset.numIndex = i;
+
+  // Header
+  var header = document.createElement('div');
+  header.className = 'number-card-header';
+  header.textContent = 'Number ' + i;
+  card.appendChild(header);
+
+  // Type toggle
+  var toggle = document.createElement('div');
+  toggle.className = 'number-type-toggle';
+  var currentType = state.number_types[i] || 'captured';
+
+  var capturedRadio = document.createElement('label');
+  capturedRadio.innerHTML = '<input type="radio" name="numberType-' + i + '" value="captured"' +
+    (currentType === 'captured' ? ' checked' : '') + '> I have samples for this voice';
+  capturedRadio.querySelector('input').addEventListener('change', function() { onNumberTypeChange(i, 'captured'); });
+  toggle.appendChild(capturedRadio);
+
+  var designedRadio = document.createElement('label');
+  designedRadio.innerHTML = '<input type="radio" name="numberType-' + i + '" value="designed"' +
+    (currentType === 'designed' ? ' checked' : '') + '> I want to develop this voice';
+  designedRadio.querySelector('input').addEventListener('change', function() { onNumberTypeChange(i, 'designed'); });
+  toggle.appendChild(designedRadio);
+
+  card.appendChild(toggle);
+
+  // Captured fields
+  var capturedDiv = document.createElement('div');
+  capturedDiv.className = 'number-fields' + (currentType === 'captured' ? ' active' : '');
+  capturedDiv.dataset.fieldType = 'captured';
+  capturedDiv.dataset.numIndex = i;
+  buildCapturedFields(capturedDiv, i);
+  card.appendChild(capturedDiv);
+
+  // Designed fields
+  var designedDiv = document.createElement('div');
+  designedDiv.className = 'number-fields' + (currentType === 'designed' ? ' active' : '');
+  designedDiv.dataset.fieldType = 'designed';
+  designedDiv.dataset.numIndex = i;
+  buildDesignedFields(designedDiv, i);
+  card.appendChild(designedDiv);
+
+  return card;
+}
+
+function buildCapturedFields(parent, i) {
+  parent.innerHTML = '';
+  var labelEl = document.createElement('label');
+  labelEl.textContent = 'Short label';
+  parent.appendChild(labelEl);
+
+  var labelInput = document.createElement('input');
+  labelInput.type = 'text';
+  labelInput.placeholder = 'Describe this context. Example: Instagram caption';
+  labelInput.dataset.number = i;
+  labelInput.dataset.field = 'label';
+  labelInput.value = state.numbers[i] || '';
+  labelInput.addEventListener('input', function() { updateNumberProgress(); });
+  parent.appendChild(labelInput);
+
+  var descLabel = document.createElement('label');
+  descLabel.textContent = 'Longer description';
+  parent.appendChild(descLabel);
+
+  var descArea = document.createElement('textarea');
+  descArea.placeholder = "Who do you write to in this context? What's the tone? What makes it distinct from your other Numbers?";
+  descArea.dataset.number = i;
+  descArea.dataset.field = 'description';
+  descArea.value = state.number_descriptions[i] || '';
+  parent.appendChild(descArea);
+}
+
+function buildDesignedFields(parent, i) {
+  parent.innerHTML = '';
+  var intent = state.designed_intent[i] || { audience: '', want_known_for: '', admired: [], avoided: [], notes: '' };
+
+  var labelEl = document.createElement('label');
+  labelEl.textContent = 'Short label';
+  parent.appendChild(labelEl);
+  var labelInput = document.createElement('input');
+  labelInput.type = 'text';
+  labelInput.placeholder = 'Name this voice. Example: LinkedIn post';
+  labelInput.dataset.number = i;
+  labelInput.dataset.field = 'label-designed';
+  labelInput.value = state.numbers[i] || '';
+  labelInput.addEventListener('input', function() { updateNumberProgress(); });
+  parent.appendChild(labelInput);
+
+  var audLabel = document.createElement('label');
+  audLabel.textContent = 'Who do you want to reach with this voice?';
+  parent.appendChild(audLabel);
+  var audHelp = document.createElement('div');
+  audHelp.className = 'field-help';
+  audHelp.textContent = "Describe your audience for this Number specifically. Be concrete about who they are, what they care about, what they're trying to figure out. Example: Small business owners in their 40s who are skeptical of marketing but know they need to be visible online. They want practical advice that doesn't feel salesy.";
+  parent.appendChild(audHelp);
+  var audArea = document.createElement('textarea');
+  audArea.dataset.number = i;
+  audArea.dataset.field = 'audience';
+  audArea.value = intent.audience || '';
+  parent.appendChild(audArea);
+
+  var wkfLabel = document.createElement('label');
+  wkfLabel.textContent = 'What do you want to be known for in this context?';
+  parent.appendChild(wkfLabel);
+  var wkfHelp = document.createElement('div');
+  wkfHelp.className = 'field-help';
+  wkfHelp.textContent = "If a stranger read your posts here for a month, what should they walk away thinking about you? Example: That I make AI feel approachable for nonprofit leaders who feel intimidated by it.";
+  parent.appendChild(wkfHelp);
+  var wkfArea = document.createElement('textarea');
+  wkfArea.dataset.number = i;
+  wkfArea.dataset.field = 'want_known_for';
+  wkfArea.value = intent.want_known_for || '';
+  parent.appendChild(wkfArea);
+
+  // Admired examples
+  var admiredLabel = document.createElement('label');
+  admiredLabel.textContent = 'Paste 1-3 examples of voices you admire in this space';
+  parent.appendChild(admiredLabel);
+  var admiredHelp = document.createElement('div');
+  admiredHelp.className = 'field-help';
+  admiredHelp.textContent = "Find actual posts, captions, or content from people who write the way you'd want to write here. Copy and paste them in full. For each example, add a short note about what specifically you like (the rhythm, the warmth, the directness, the specificity).";
+  parent.appendChild(admiredHelp);
+  var admiredContainer = document.createElement('div');
+  admiredContainer.dataset.examplesContainer = 'admired';
+  admiredContainer.dataset.numIndex = i;
+  parent.appendChild(admiredContainer);
+  var admiredAddBtn = document.createElement('button');
+  admiredAddBtn.type = 'button';
+  admiredAddBtn.className = 'add-example-btn';
+  admiredAddBtn.textContent = '+ Add another admired example';
+  admiredAddBtn.addEventListener('click', function() { addExample(i, 'admired'); });
+  parent.appendChild(admiredAddBtn);
+  var admiredWarn = document.createElement('div');
+  admiredWarn.className = 'examples-warn';
+  admiredWarn.textContent = 'More examples produce better synthesis. 3 of each is recommended.';
+  parent.appendChild(admiredWarn);
+  // Initialize admired list. Need at least 1 entry shown.
+  if (!intent.admired || intent.admired.length === 0) {
+    if (!state.designed_intent[i]) state.designed_intent[i] = { audience: '', want_known_for: '', admired: [], avoided: [], notes: '' };
+    state.designed_intent[i].admired = [{ text: '', what: '' }];
+  }
+  renderExamples(i, 'admired');
+
+  // Avoided examples
+  var avoidedLabel = document.createElement('label');
+  avoidedLabel.textContent = 'Paste 1-3 examples of voices you want to avoid in this space';
+  parent.appendChild(avoidedLabel);
+  var avoidedHelp = document.createElement('div');
+  avoidedHelp.className = 'field-help';
+  avoidedHelp.textContent = "Find actual posts that make you cringe or roll your eyes. The kind of writing you would never want associated with you in this space. Copy and paste them in full. For each, add a short note about what specifically bothers you.";
+  parent.appendChild(avoidedHelp);
+  var avoidedContainer = document.createElement('div');
+  avoidedContainer.dataset.examplesContainer = 'avoided';
+  avoidedContainer.dataset.numIndex = i;
+  parent.appendChild(avoidedContainer);
+  var avoidedAddBtn = document.createElement('button');
+  avoidedAddBtn.type = 'button';
+  avoidedAddBtn.className = 'add-example-btn';
+  avoidedAddBtn.textContent = '+ Add another avoided example';
+  avoidedAddBtn.addEventListener('click', function() { addExample(i, 'avoided'); });
+  parent.appendChild(avoidedAddBtn);
+  var avoidedWarn = document.createElement('div');
+  avoidedWarn.className = 'examples-warn';
+  avoidedWarn.textContent = 'More examples produce better synthesis. 3 of each is recommended.';
+  parent.appendChild(avoidedWarn);
+  if (!intent.avoided || intent.avoided.length === 0) {
+    if (!state.designed_intent[i]) state.designed_intent[i] = { audience: '', want_known_for: '', admired: [{ text: '', what: '' }], avoided: [], notes: '' };
+    state.designed_intent[i].avoided = [{ text: '', what: '' }];
+  }
+  renderExamples(i, 'avoided');
+
+  // Additional notes (optional)
+  var notesLabel = document.createElement('label');
+  notesLabel.textContent = 'Anything else specific to this voice that matters? (optional)';
+  parent.appendChild(notesLabel);
+  var notesHelp = document.createElement('div');
+  notesHelp.className = 'field-help';
+  notesHelp.textContent = "Things you want to do, things you refuse to do, platform conventions you want to honor or break. Anything that helps a strategist design this voice for you.";
+  parent.appendChild(notesHelp);
+  var notesArea = document.createElement('textarea');
+  notesArea.dataset.number = i;
+  notesArea.dataset.field = 'notes';
+  notesArea.value = intent.notes || '';
+  parent.appendChild(notesArea);
+}
+
+function ensureDesignedIntent(i) {
+  if (!state.designed_intent[i]) {
+    state.designed_intent[i] = { audience: '', want_known_for: '', admired: [], avoided: [], notes: '' };
+  }
+  if (!state.designed_intent[i].admired) state.designed_intent[i].admired = [];
+  if (!state.designed_intent[i].avoided) state.designed_intent[i].avoided = [];
+  return state.designed_intent[i];
+}
+
+function renderExamples(i, kind) {
+  var intent = ensureDesignedIntent(i);
+  var list = intent[kind] || [];
+  var container = document.querySelector('[data-examples-container="' + kind + '"][data-num-index="' + i + '"]');
+  if (!container) return;
+  container.innerHTML = '';
+  list.forEach(function(ex, idx) {
+    var block = document.createElement('div');
+    block.className = 'example-block';
+    block.dataset.numIndex = i;
+    block.dataset.kind = kind;
+    block.dataset.idx = idx;
+
+    if (list.length > 1) {
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'remove-example';
+      rm.innerHTML = '&times;';
+      rm.title = 'Remove this example';
+      rm.addEventListener('click', function() { removeExample(i, kind, idx); });
+      block.appendChild(rm);
+    }
+
+    var pasteLabel = document.createElement('label');
+    pasteLabel.textContent = 'Paste the example';
+    block.appendChild(pasteLabel);
+    var pasteArea = document.createElement('textarea');
+    pasteArea.style.minHeight = '80px';
+    pasteArea.value = ex.text || '';
+    pasteArea.addEventListener('input', function() {
+      ensureDesignedIntent(i)[kind][idx].text = pasteArea.value;
+    });
+    block.appendChild(pasteArea);
+
+    var noteLabel = document.createElement('label');
+    noteLabel.textContent = (kind === 'admired') ? 'What do you admire about this?' : 'What bothers you about this?';
+    block.appendChild(noteLabel);
+    var noteInput = document.createElement('input');
+    noteInput.type = 'text';
+    noteInput.value = ex.what || '';
+    noteInput.addEventListener('input', function() {
+      ensureDesignedIntent(i)[kind][idx].what = noteInput.value;
+    });
+    block.appendChild(noteInput);
+
+    container.appendChild(block);
   });
+  // Disable add-button if at 3
+  var addBtn = container.parentElement.querySelector('.add-example-btn');
+  if (addBtn) {
+    addBtn.disabled = list.length >= 3;
+  }
+}
+
+function addExample(i, kind) {
+  var intent = ensureDesignedIntent(i);
+  if (!intent[kind]) intent[kind] = [];
+  if (intent[kind].length >= 3) return;
+  // Persist current values before re-render so we don't lose in-progress text
+  saveNumbers();
+  intent[kind].push({ text: '', what: '' });
+  renderExamples(i, kind);
+}
+
+function removeExample(i, kind, idx) {
+  var intent = ensureDesignedIntent(i);
+  saveNumbers();
+  intent[kind].splice(idx, 1);
+  if (intent[kind].length === 0) intent[kind].push({ text: '', what: '' });
+  renderExamples(i, kind);
+}
+
+function onNumberTypeChange(i, newType) {
+  saveNumbers();
+  state.number_types[i] = newType;
+  // Toggle visibility
+  var card = document.querySelector('.number-card[data-num-index="' + i + '"]');
+  if (!card) return;
+  card.querySelectorAll('.number-fields').forEach(function(div) {
+    if (div.dataset.fieldType === newType) {
+      div.classList.add('active');
+    } else {
+      div.classList.remove('active');
+    }
+  });
+  // If switching to designed and no intent exists yet, initialize with one
+  // empty admired and avoided so the user sees the boxes.
+  if (newType === 'designed') {
+    var intent = ensureDesignedIntent(i);
+    if (intent.admired.length === 0) intent.admired.push({ text: '', what: '' });
+    if (intent.avoided.length === 0) intent.avoided.push({ text: '', what: '' });
+    // Re-render the designed pane to surface initialized examples.
+    var designedPane = card.querySelector('.number-fields[data-field-type="designed"]');
+    buildDesignedFields(designedPane, i);
+  }
+  updateNumberProgress();
+}
+
+function saveNumbers() {
+  // Walk every number card and save label + type-specific fields.
+  for (var i = 1; i <= 10; i++) {
+    var card = document.querySelector('.number-card[data-num-index="' + i + '"]');
+    if (!card) continue;
+
+    // Type from radio
+    var checked = card.querySelector('input[name="numberType-' + i + '"]:checked');
+    if (checked) state.number_types[i] = checked.value;
+
+    var ntype = state.number_types[i] || 'captured';
+
+    if (ntype === 'captured') {
+      var labelInput = card.querySelector('input[data-field="label"]');
+      var descArea = card.querySelector('textarea[data-field="description"]');
+      if (labelInput) state.numbers[i] = labelInput.value.trim();
+      if (descArea) state.number_descriptions[i] = descArea.value.trim();
+    } else {
+      var dLabelInput = card.querySelector('input[data-field="label-designed"]');
+      if (dLabelInput) state.numbers[i] = dLabelInput.value.trim();
+      var intent = ensureDesignedIntent(i);
+      var audArea = card.querySelector('textarea[data-field="audience"]');
+      var wkfArea = card.querySelector('textarea[data-field="want_known_for"]');
+      var notesArea = card.querySelector('textarea[data-field="notes"]');
+      if (audArea) intent.audience = audArea.value.trim();
+      if (wkfArea) intent.want_known_for = wkfArea.value.trim();
+      if (notesArea) intent.notes = notesArea.value.trim();
+      // Examples are persisted directly via input listeners; nothing extra here.
+    }
+  }
 }
 
 function updateNumberProgress() {
@@ -576,13 +998,37 @@ function getUsedNumbers() {
 function updateNumberDropdown() {
   saveNumbers();
   var dropdown = document.getElementById('numberDropdown');
+  if (!dropdown) return;
   dropdown.innerHTML = '<option value="">Select a Number</option>';
+  var capturedCount = 0;
+  var designedCount = 0;
   for (var i = 1; i <= 10; i++) {
-    if (state.numbers[i]) {
+    if (!state.numbers[i] || !state.numbers[i].trim()) continue;
+    var ntype = state.number_types[i] || 'captured';
+    if (ntype === 'captured') {
+      capturedCount++;
       var opt = document.createElement('option');
       opt.value = i;
       opt.textContent = 'Number ' + i + ': ' + state.numbers[i];
       dropdown.appendChild(opt);
+    } else {
+      designedCount++;
+    }
+  }
+  // Toggle Page 6 between "all designed" notice and the captured-sample form.
+  var noticeEl = document.getElementById('allDesignedNotice');
+  var formEl = document.getElementById('capturedSampleSection');
+  var skipNoteEl = document.getElementById('designedSkipNote');
+  if (noticeEl && formEl) {
+    if (capturedCount === 0) {
+      noticeEl.style.display = '';
+      formEl.style.display = 'none';
+    } else {
+      noticeEl.style.display = 'none';
+      formEl.style.display = '';
+      if (skipNoteEl) {
+        skipNoteEl.style.display = (designedCount > 0) ? '' : 'none';
+      }
     }
   }
 }
@@ -820,88 +1266,263 @@ function saveCharacteristics() {
   });
 }
 
-/* ── Page 9: Number Definitions ── */
+/* ── Page 9: Number Definitions Review (v2.5: split captured vs designed) ── */
+function getFilledNumbers() {
+  var nums = [];
+  for (var i = 1; i <= 10; i++) {
+    if (state.numbers[i] && state.numbers[i].trim()) nums.push(i);
+  }
+  return nums;
+}
+
 function buildNumberDefAccordions() {
   var container = document.getElementById('numberDefsContainer');
   container.innerHTML = '';
-  var usedNumbers = getUsedNumbers();
-  if (!usedNumbers.length) {
-    container.innerHTML = '<p class="body" style="color:var(--muted);font-style:italic;">No samples added yet. Go back and add samples first.</p>';
+  var filled = getFilledNumbers();
+  if (!filled.length) {
+    container.innerHTML = '<p class="body" style="color:var(--muted);font-style:italic;">No Numbers defined yet. Go back and define your Numbers first.</p>';
     return;
   }
-  usedNumbers.forEach(function(num) {
-    var bodyDiv = document.createElement('div');
+  var capturedNums = filled.filter(function(n) { return (state.number_types[n] || 'captured') === 'captured'; });
+  var designedNums = filled.filter(function(n) { return (state.number_types[n] || 'captured') === 'designed'; });
 
-    var numLabel = document.createElement('div');
-    numLabel.style.fontSize = '0.9rem';
-    numLabel.style.marginBottom = '12px';
-    numLabel.style.color = 'var(--muted)';
-    numLabel.textContent = 'Context: ' + (state.numbers[num] || '');
-    bodyDiv.appendChild(numLabel);
+  if (capturedNums.length > 0) {
+    var capturedHeading = document.createElement('h3');
+    capturedHeading.style.fontFamily = "'Playfair Display', serif";
+    capturedHeading.style.color = 'var(--accent)';
+    capturedHeading.style.fontSize = '1.1rem';
+    capturedHeading.style.marginTop = '8px';
+    capturedHeading.style.marginBottom = '10px';
+    capturedHeading.textContent = 'Captured Numbers';
+    container.appendChild(capturedHeading);
+    capturedNums.forEach(function(num) {
+      container.appendChild(createAccordion('Number ' + num + ': ' + state.numbers[num], buildCapturedReviewBody(num)));
+    });
+  }
 
-    var levelSamples = state.samples.filter(function(s) { return s.number === num; });
-    if (levelSamples.length > 0) {
-      var samplesLabel = document.createElement('div');
-      samplesLabel.style.fontSize = '0.85rem';
-      samplesLabel.style.fontWeight = '500';
-      samplesLabel.style.marginBottom = '8px';
-      samplesLabel.textContent = 'Your samples at this Number:';
-      bodyDiv.appendChild(samplesLabel);
-      levelSamples.forEach(function(s) {
-        var card = document.createElement('div');
-        card.style.background = '#faf7f2';
-        card.style.border = '1px solid var(--rule)';
-        card.style.borderRadius = '4px';
-        card.style.padding = '12px 14px';
-        card.style.marginBottom = '8px';
-        card.style.fontSize = '0.85rem';
-        card.style.lineHeight = '1.6';
-        card.style.color = 'var(--ink)';
-        card.style.whiteSpace = 'pre-wrap';
-        var meta = document.createElement('div');
-        meta.style.fontSize = '0.75rem';
-        meta.style.color = 'var(--muted)';
-        meta.style.marginBottom = '4px';
-        meta.textContent = (s.context || 'Sample') + (s.recipient ? ' / To: ' + s.recipient : '');
-        card.appendChild(meta);
-        var text = document.createElement('div');
-        text.textContent = s.text;
-        card.appendChild(text);
-        bodyDiv.appendChild(card);
-      });
-    }
+  if (designedNums.length > 0) {
+    var designedHeading = document.createElement('h3');
+    designedHeading.style.fontFamily = "'Playfair Display', serif";
+    designedHeading.style.color = 'var(--accent)';
+    designedHeading.style.fontSize = '1.1rem';
+    designedHeading.style.marginTop = '24px';
+    designedHeading.style.marginBottom = '10px';
+    designedHeading.textContent = 'Designed Numbers (to be developed)';
+    container.appendChild(designedHeading);
+    designedNums.forEach(function(num) {
+      container.appendChild(createAccordion('Number ' + num + ': ' + state.numbers[num] + ' (to be developed)', buildDesignedReviewBody(num)));
+    });
+  }
+}
 
-    var lbl1 = document.createElement('label');
-    lbl1.textContent = 'Describe Number ' + num + ' in your own words (required)';
-    lbl1.style.marginTop = '14px';
-    bodyDiv.appendChild(lbl1);
-    var ta1 = document.createElement('textarea');
-    ta1.style.minHeight = '80px';
-    ta1.placeholder = 'Who do you write to at this level? How do you sound? What makes this Number distinct?';
-    ta1.dataset.numberNum = num;
-    ta1.dataset.numberField = 'description';
-    ta1.value = (state.number_definitions[num] && state.number_definitions[num].description) || '';
-    bodyDiv.appendChild(ta1);
+function buildCapturedReviewBody(num) {
+  var bodyDiv = document.createElement('div');
 
-    var lbl2 = document.createElement('label');
-    lbl2.textContent = 'Anything else specific to this Number? (optional)';
-    bodyDiv.appendChild(lbl2);
-    var ta2 = document.createElement('textarea');
-    ta2.style.minHeight = '60px';
-    ta2.placeholder = 'Optional';
-    ta2.dataset.numberNum = num;
-    ta2.dataset.numberField = 'notes';
-    ta2.value = (state.number_definitions[num] && state.number_definitions[num].notes) || '';
-    bodyDiv.appendChild(ta2);
+  var ctxRow = document.createElement('div');
+  ctxRow.style.fontSize = '0.85rem';
+  ctxRow.style.marginBottom = '10px';
+  ctxRow.style.color = 'var(--muted)';
+  ctxRow.textContent = 'Context: ' + (state.numbers[num] || '');
+  bodyDiv.appendChild(ctxRow);
 
-    container.appendChild(createAccordion('Number ' + num, bodyDiv));
-  });
+  var description = state.number_descriptions[num] || '';
+  if (description) {
+    var dLbl = document.createElement('div');
+    dLbl.style.fontSize = '0.78rem';
+    dLbl.style.fontWeight = '500';
+    dLbl.style.color = 'var(--muted)';
+    dLbl.style.textTransform = 'uppercase';
+    dLbl.style.letterSpacing = '0.06em';
+    dLbl.style.marginBottom = '4px';
+    dLbl.textContent = 'Your description';
+    bodyDiv.appendChild(dLbl);
+    var dEl = document.createElement('div');
+    dEl.style.background = '#faf7f2';
+    dEl.style.border = '1px solid var(--rule)';
+    dEl.style.borderRadius = '4px';
+    dEl.style.padding = '10px 12px';
+    dEl.style.marginBottom = '14px';
+    dEl.style.fontSize = '0.88rem';
+    dEl.style.lineHeight = '1.6';
+    dEl.style.whiteSpace = 'pre-wrap';
+    dEl.textContent = description;
+    bodyDiv.appendChild(dEl);
+  }
+
+  var levelSamples = state.samples.filter(function(s) { return s.number === num; });
+  if (levelSamples.length > 0) {
+    var samplesLabel = document.createElement('div');
+    samplesLabel.style.fontSize = '0.78rem';
+    samplesLabel.style.fontWeight = '500';
+    samplesLabel.style.color = 'var(--muted)';
+    samplesLabel.style.textTransform = 'uppercase';
+    samplesLabel.style.letterSpacing = '0.06em';
+    samplesLabel.style.marginBottom = '6px';
+    samplesLabel.textContent = 'Samples at this Number';
+    bodyDiv.appendChild(samplesLabel);
+    levelSamples.forEach(function(s) {
+      var card = document.createElement('div');
+      card.style.background = '#faf7f2';
+      card.style.border = '1px solid var(--rule)';
+      card.style.borderRadius = '4px';
+      card.style.padding = '10px 12px';
+      card.style.marginBottom = '8px';
+      card.style.fontSize = '0.85rem';
+      card.style.lineHeight = '1.6';
+      card.style.whiteSpace = 'pre-wrap';
+      var meta = document.createElement('div');
+      meta.style.fontSize = '0.72rem';
+      meta.style.color = 'var(--muted)';
+      meta.style.marginBottom = '4px';
+      meta.textContent = (s.context || 'Sample') + (s.recipient ? ' / To: ' + s.recipient : '');
+      card.appendChild(meta);
+      var text = document.createElement('div');
+      text.textContent = s.text;
+      card.appendChild(text);
+      bodyDiv.appendChild(card);
+    });
+  } else {
+    var noSamplesNote = document.createElement('div');
+    noSamplesNote.style.fontSize = '0.85rem';
+    noSamplesNote.style.color = 'var(--muted)';
+    noSamplesNote.style.fontStyle = 'italic';
+    noSamplesNote.style.marginBottom = '14px';
+    noSamplesNote.textContent = 'No samples added at this Number.';
+    bodyDiv.appendChild(noSamplesNote);
+  }
+
+  var addLbl = document.createElement('label');
+  addLbl.textContent = 'Anything else to add for this Number? (optional)';
+  bodyDiv.appendChild(addLbl);
+  var addArea = document.createElement('textarea');
+  addArea.style.minHeight = '60px';
+  addArea.placeholder = 'Optional';
+  addArea.dataset.numberNum = num;
+  addArea.dataset.numberField = 'final_note';
+  addArea.value = (state.number_definitions[num] && state.number_definitions[num].final_note) || '';
+  bodyDiv.appendChild(addArea);
+
+  return bodyDiv;
+}
+
+function buildDesignedReviewBody(num) {
+  var bodyDiv = document.createElement('div');
+  var intent = state.designed_intent[num] || { audience: '', want_known_for: '', admired: [], avoided: [], notes: '' };
+
+  var ctxRow = document.createElement('div');
+  ctxRow.style.fontSize = '0.85rem';
+  ctxRow.style.marginBottom = '14px';
+  ctxRow.style.color = 'var(--muted)';
+  ctxRow.textContent = 'This is a designed voice. A strategist will synthesize it from your other inputs.';
+  bodyDiv.appendChild(ctxRow);
+
+  bodyDiv.appendChild(makeReviewBlock('Audience', intent.audience));
+  bodyDiv.appendChild(makeReviewBlock('What you want to be known for', intent.want_known_for));
+
+  if (intent.admired && intent.admired.length > 0) {
+    var admiredHeader = document.createElement('div');
+    admiredHeader.style.fontSize = '0.78rem';
+    admiredHeader.style.fontWeight = '500';
+    admiredHeader.style.color = 'var(--muted)';
+    admiredHeader.style.textTransform = 'uppercase';
+    admiredHeader.style.letterSpacing = '0.06em';
+    admiredHeader.style.marginTop = '14px';
+    admiredHeader.style.marginBottom = '6px';
+    admiredHeader.textContent = 'Voices admired';
+    bodyDiv.appendChild(admiredHeader);
+    intent.admired.forEach(function(ex) {
+      if (!ex.text || !ex.text.trim()) return;
+      bodyDiv.appendChild(makeExampleReadout(ex.text, ex.what, 'You admire'));
+    });
+  }
+
+  if (intent.avoided && intent.avoided.length > 0) {
+    var avoidedHeader = document.createElement('div');
+    avoidedHeader.style.fontSize = '0.78rem';
+    avoidedHeader.style.fontWeight = '500';
+    avoidedHeader.style.color = 'var(--muted)';
+    avoidedHeader.style.textTransform = 'uppercase';
+    avoidedHeader.style.letterSpacing = '0.06em';
+    avoidedHeader.style.marginTop = '14px';
+    avoidedHeader.style.marginBottom = '6px';
+    avoidedHeader.textContent = 'Voices to avoid';
+    bodyDiv.appendChild(avoidedHeader);
+    intent.avoided.forEach(function(ex) {
+      if (!ex.text || !ex.text.trim()) return;
+      bodyDiv.appendChild(makeExampleReadout(ex.text, ex.what, 'What bothers you'));
+    });
+  }
+
+  if (intent.notes && intent.notes.trim()) {
+    bodyDiv.appendChild(makeReviewBlock('Additional notes', intent.notes));
+  }
+
+  var addLbl = document.createElement('label');
+  addLbl.textContent = 'Anything else to add before we send this to Karen for synthesis? (optional)';
+  bodyDiv.appendChild(addLbl);
+  var addArea = document.createElement('textarea');
+  addArea.style.minHeight = '60px';
+  addArea.placeholder = 'Optional';
+  addArea.dataset.numberNum = num;
+  addArea.dataset.numberField = 'final_note';
+  addArea.value = (state.number_definitions[num] && state.number_definitions[num].final_note) || '';
+  bodyDiv.appendChild(addArea);
+
+  return bodyDiv;
+}
+
+function makeReviewBlock(label, value) {
+  var wrap = document.createElement('div');
+  wrap.style.marginBottom = '12px';
+  var lbl = document.createElement('div');
+  lbl.style.fontSize = '0.78rem';
+  lbl.style.fontWeight = '500';
+  lbl.style.color = 'var(--muted)';
+  lbl.style.textTransform = 'uppercase';
+  lbl.style.letterSpacing = '0.06em';
+  lbl.style.marginBottom = '4px';
+  lbl.textContent = label;
+  wrap.appendChild(lbl);
+  var box = document.createElement('div');
+  box.style.background = '#faf7f2';
+  box.style.border = '1px solid var(--rule)';
+  box.style.borderRadius = '4px';
+  box.style.padding = '10px 12px';
+  box.style.fontSize = '0.88rem';
+  box.style.lineHeight = '1.6';
+  box.style.whiteSpace = 'pre-wrap';
+  box.textContent = value || '(empty)';
+  wrap.appendChild(box);
+  return wrap;
+}
+
+function makeExampleReadout(text, what, whatLabel) {
+  var card = document.createElement('div');
+  card.style.background = '#faf7f2';
+  card.style.border = '1px solid var(--rule)';
+  card.style.borderRadius = '4px';
+  card.style.padding = '10px 12px';
+  card.style.marginBottom = '8px';
+  card.style.fontSize = '0.85rem';
+  card.style.lineHeight = '1.6';
+  card.style.whiteSpace = 'pre-wrap';
+  card.textContent = text;
+  if (what && what.trim()) {
+    var note = document.createElement('div');
+    note.style.fontSize = '0.78rem';
+    note.style.color = 'var(--muted)';
+    note.style.fontStyle = 'italic';
+    note.style.marginTop = '6px';
+    note.textContent = whatLabel + ': ' + what;
+    card.appendChild(note);
+  }
+  return card;
 }
 
 function saveNumberDefs() {
   document.querySelectorAll('#numberDefsContainer textarea[data-number-num]').forEach(function(ta) {
     var num = parseInt(ta.dataset.numberNum);
-    if (!state.number_definitions[num]) state.number_definitions[num] = { description: '', notes: '' };
+    if (!state.number_definitions[num]) state.number_definitions[num] = { final_note: '' };
     state.number_definitions[num][ta.dataset.numberField] = ta.value.trim();
   });
 }
@@ -909,24 +1530,40 @@ function saveNumberDefs() {
 /* ── Output builders ── */
 function buildVoiceProfileMarkdown() {
   var name = state.client_name || 'this person';
-  var role = state.client_role;
   var email = state.client_email;
   var useCase = state.use_case;
   var allTypes = state.selected_writing_types.concat(state.custom_writing_types);
   var formats = state.format_definitions;
   var samples = state.samples;
   var defs = state.number_definitions;
+  var filledNumbers = getFilledNumbers();
+  var hasDesigned = filledNumbers.some(function(n) { return (state.number_types[n] || 'captured') === 'designed'; });
 
   var p = '';
   p += '# VOICE STUDIO PROFILE\n\n';
   p += 'Name: ' + name + '\n';
-  if (role) p += 'Role: ' + role + '\n';
   if (email) p += 'Email: ' + email + '\n';
+  if (state.client_business) p += 'Business: ' + state.client_business + '\n';
+  if (state.client_what_you_do) p += 'What you do: ' + state.client_what_you_do + '\n';
+  if (state.client_who_you_serve) p += 'Who you serve: ' + state.client_who_you_serve + '\n';
+  if (state.client_how_long) p += 'Doing this for: ' + state.client_how_long + '\n';
+  if (state.client_one_thing) p += 'What you wish people understood: ' + state.client_one_thing + '\n';
   p += 'Use Case: ' + useCase + '\n';
   p += 'Built: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '\n\n';
 
+  if (hasDesigned) {
+    p += '## A Note on Designed Numbers\n\n';
+    p += "Some of my Numbers below are marked \"TO BE DEVELOPED.\" These are voices I want to use but haven't yet practiced. The placeholder content captures my intent. A strategist will synthesize the actual voice for those Numbers using the rest of my profile.\n\n";
+    p += "If you are reading this ME.md before synthesis is complete, ignore the designed Numbers for now. Use only the captured Numbers when writing in my voice.\n\n";
+    p += "If synthesis IS complete, the designed Numbers below will be filled in with real voice guidance.\n\n";
+  }
+
   p += '## WRITING TYPES\n\n';
-  allTypes.length ? allTypes.forEach(function(t) { p += '- ' + t + '\n'; }) : p += '(none selected)\n';
+  if (allTypes.length) {
+    allTypes.forEach(function(t) { p += '- ' + t + '\n'; });
+  } else {
+    p += '(none selected)\n';
+  }
   p += '\n';
 
   p += '## FORMAT LIBRARY\n\n';
@@ -938,34 +1575,69 @@ function buildVoiceProfileMarkdown() {
   }
 
   p += '## YOUR NUMBERS\n\n';
-  var usedNumbers = getUsedNumbers();
-  if (usedNumbers.length) {
-    usedNumbers.forEach(function(num) {
-      var d = defs[num];
-      p += '**Number ' + num + '**: ' + (state.numbers[num] || '') + '\n';
-      if (d && d.description) {
-        p += d.description + '\n';
-        if (d.notes) p += 'Additional notes: ' + d.notes + '\n';
-      }
-      p += '\n';
-    });
+  if (!filledNumbers.length) {
+    p += '(not defined)\n\n';
   } else {
-    p += '(not defined)\n';
-  }
-  p += '\n';
+    filledNumbers.forEach(function(num) {
+      var ntype = state.number_types[num] || 'captured';
+      var label = state.numbers[num] || '';
+      var d = defs[num] || {};
 
-  p += '## VOICE SAMPLES (' + samples.length + ')\n\n';
-  if (!samples.length) {
-    p += '(no samples added)\n';
-  } else {
-    usedNumbers.forEach(function(num) {
-      var numberSamples = samples.filter(function(s) { return s.number === num; });
-      numberSamples.forEach(function(s, i) {
-        p += '### Sample ' + (i + 1) + ' (Number ' + s.number + ')\n\n';
-        if (s.context) p += 'Type: ' + s.context + '\n';
-        if (s.recipient) p += 'To: ' + s.recipient + '\n\n';
-        p += s.text + '\n\n';
-      });
+      if (ntype === 'captured') {
+        p += '### Number ' + num + ': ' + label + '\n\n';
+        var description = state.number_descriptions[num] || '';
+        if (description) p += description + '\n\n';
+        var levelSamples = samples.filter(function(s) { return s.number === num; });
+        if (levelSamples.length > 0) {
+          p += '**Samples at this Number:**\n\n';
+          levelSamples.forEach(function(s) {
+            p += '> ' + s.text.split('\n').join('\n> ') + '\n\n';
+          });
+        }
+        if (d.final_note && d.final_note.trim()) {
+          p += '**Additional notes:** ' + d.final_note + '\n\n';
+        }
+      } else {
+        // Designed
+        p += '### Number ' + num + ': ' + label + ' (TO BE DEVELOPED)\n\n';
+        p += '**Status:** This voice has not yet been captured. The user wants to develop it. A strategist will synthesize this voice based on the user\'s other inputs.\n\n';
+        var intent = state.designed_intent[num] || {};
+        p += '**Intent:**\n\n';
+        p += '- **Audience:** ' + (intent.audience || '') + '\n';
+        p += '- **What they want to be known for:** ' + (intent.want_known_for || '') + '\n\n';
+
+        var admiredFiltered = (intent.admired || []).filter(function(e) { return e.text && e.text.trim(); });
+        if (admiredFiltered.length > 0) {
+          p += '**Voices admired:**\n\n';
+          admiredFiltered.forEach(function(e) {
+            p += '> ' + e.text.split('\n').join('\n> ') + '\n';
+            if (e.what && e.what.trim()) {
+              p += '> *What they admire: ' + e.what + '*\n';
+            }
+            p += '\n';
+          });
+        }
+
+        var avoidedFiltered = (intent.avoided || []).filter(function(e) { return e.text && e.text.trim(); });
+        if (avoidedFiltered.length > 0) {
+          p += '**Voices to avoid:**\n\n';
+          avoidedFiltered.forEach(function(e) {
+            p += '> ' + e.text.split('\n').join('\n> ') + '\n';
+            if (e.what && e.what.trim()) {
+              p += '> *What bothers them: ' + e.what + '*\n';
+            }
+            p += '\n';
+          });
+        }
+
+        if (intent.notes && intent.notes.trim()) {
+          p += '**Additional notes:** ' + intent.notes + '\n\n';
+        }
+        if (d.final_note && d.final_note.trim()) {
+          p += '**Final note from user:** ' + d.final_note + '\n\n';
+        }
+        p += '**Note for synthesis:** A strategist should design this voice using the user\'s captured Numbers, personal characteristics, Discovery Form data, belief interview notes, and audience profile. See `roots-and-reach/recipes/designed-numbers-synthesis.md`.\n\n';
+      }
     });
   }
 
@@ -996,16 +1668,34 @@ function buildSystemPromptXML() {
   var formats = state.format_definitions;
   var samples = state.samples;
   var defs = state.number_definitions;
-  var usedNumbers = getUsedNumbers();
+  var filledNumbers = getFilledNumbers();
+  var hasDesigned = filledNumbers.some(function(n) { return (state.number_types[n] || 'captured') === 'designed'; });
 
   var x = '<?xml version="1.0" encoding="UTF-8"?>\n';
   x += '<voice_profile>\n\n';
+
+  if (hasDesigned) {
+    x += '<!--\n';
+    x += 'This voice profile contains Numbers marked type="designed". These are voices the user wants to develop but does not yet have samples for. They have provided intent (audience, goals, admired voices, avoided voices) but not actual writing.\n\n';
+    x += 'A strategist (Karen) should synthesize the designed Numbers using:\n';
+    x += '- The user\'s captured Numbers (for tone DNA)\n';
+    x += '- Personal characteristics\n';
+    x += '- Discovery Form data\n';
+    x += '- Belief interview notes\n';
+    x += '- Audience profile\n\n';
+    x += 'See: roots-and-reach/recipes/designed-numbers-synthesis.md\n';
+    x += '-->\n\n';
+  }
 
   x += '<role>You are ' + xmlEsc(firstName) + ' writing assistant. Your only job is to write in ' + xmlEsc(firstName) + ' voice.</role>\n\n';
 
   x += '<context>\n';
   x += '  <name>' + xmlEsc(state.client_name) + '</name>\n';
-  x += '  <role>' + xmlEsc(state.client_role) + '</role>\n';
+  if (state.client_business) x += '  <business>' + xmlEsc(state.client_business) + '</business>\n';
+  if (state.client_what_you_do) x += '  <what_you_do>' + xmlEsc(state.client_what_you_do) + '</what_you_do>\n';
+  if (state.client_who_you_serve) x += '  <who_you_serve>' + xmlEsc(state.client_who_you_serve) + '</who_you_serve>\n';
+  if (state.client_how_long) x += '  <how_long>' + xmlEsc(state.client_how_long) + '</how_long>\n';
+  if (state.client_one_thing) x += '  <one_thing>' + xmlEsc(state.client_one_thing) + '</one_thing>\n';
   x += '  <use_case>' + xmlEsc(state.use_case) + '</use_case>\n';
   x += '</context>\n\n';
 
@@ -1053,23 +1743,62 @@ function buildSystemPromptXML() {
   }
 
   x += '<numbers_scale>\n';
-  usedNumbers.forEach(function(num) {
+  filledNumbers.forEach(function(num) {
+    var ntype = state.number_types[num] || 'captured';
     var d = defs[num] || {};
-    x += '  <number value="' + num + '" context="' + xmlEsc(state.numbers[num] || '') + '">\n';
-    if (d.description) x += '    <description>' + xmlEsc(d.description) + '</description>\n';
-    if (d.notes) x += '    <notes>' + xmlEsc(d.notes) + '</notes>\n';
-    var numberSamples = samples.filter(function(s) { return s.number === num; });
-    if (numberSamples.length) {
-      x += '    <samples>\n';
-      numberSamples.forEach(function(s, i) {
-        x += '      <sample number="' + (i + 1) + '"';
-        if (s.context) x += ' context="' + xmlEsc(s.context) + '"';
-        if (s.recipient) x += ' recipient="' + xmlEsc(s.recipient) + '"';
-        x += '>\n      ' + xmlEsc(s.text) + '\n      </sample>\n';
+    var label = state.numbers[num] || '';
+
+    if (ntype === 'captured') {
+      x += '  <number index="' + num + '" label="' + xmlEsc(label) + '" type="captured">\n';
+      var description = state.number_descriptions[num] || '';
+      if (description) x += '    <description>' + xmlEsc(description) + '</description>\n';
+      if (d.final_note) x += '    <notes>' + xmlEsc(d.final_note) + '</notes>\n';
+      var numberSamples = samples.filter(function(s) { return s.number === num; });
+      if (numberSamples.length) {
+        x += '    <samples>\n';
+        numberSamples.forEach(function(s, i) {
+          x += '      <sample number="' + (i + 1) + '"';
+          if (s.context) x += ' context="' + xmlEsc(s.context) + '"';
+          if (s.recipient) x += ' recipient="' + xmlEsc(s.recipient) + '"';
+          x += '>\n      ' + xmlEsc(s.text) + '\n      </sample>\n';
+        });
+        x += '    </samples>\n';
+      }
+      x += '  </number>\n';
+    } else {
+      var intent = state.designed_intent[num] || {};
+      x += '  <number index="' + num + '" label="' + xmlEsc(label) + '" type="designed">\n';
+      x += '    <intent>\n';
+      x += '      <audience>' + xmlEsc(intent.audience || '') + '</audience>\n';
+      x += '      <want_to_be_known_for>' + xmlEsc(intent.want_known_for || '') + '</want_to_be_known_for>\n';
+      var admiredFiltered = (intent.admired || []).filter(function(e) { return e.text && e.text.trim(); });
+      x += '      <admired_voices>\n';
+      admiredFiltered.forEach(function(e) {
+        x += '        <example>\n';
+        x += '          <text>' + xmlEsc(e.text) + '</text>\n';
+        x += '          <what_admired>' + xmlEsc(e.what || '') + '</what_admired>\n';
+        x += '        </example>\n';
       });
-      x += '    </samples>\n';
+      x += '      </admired_voices>\n';
+      var avoidedFiltered = (intent.avoided || []).filter(function(e) { return e.text && e.text.trim(); });
+      x += '      <avoided_voices>\n';
+      avoidedFiltered.forEach(function(e) {
+        x += '        <example>\n';
+        x += '          <text>' + xmlEsc(e.text) + '</text>\n';
+        x += '          <what_bothers>' + xmlEsc(e.what || '') + '</what_bothers>\n';
+        x += '        </example>\n';
+      });
+      x += '      </avoided_voices>\n';
+      if (intent.notes && intent.notes.trim()) {
+        x += '      <additional_notes>' + xmlEsc(intent.notes) + '</additional_notes>\n';
+      }
+      if (d.final_note && d.final_note.trim()) {
+        x += '      <user_final_note>' + xmlEsc(d.final_note) + '</user_final_note>\n';
+      }
+      x += '    </intent>\n';
+      x += '    <synthesis_status>TO_BE_DESIGNED_BY_STRATEGIST</synthesis_status>\n';
+      x += '  </number>\n';
     }
-    x += '  </number>\n';
   });
   x += '</numbers_scale>\n\n';
 
@@ -1134,12 +1863,18 @@ function submitForm() {
   var formData = new URLSearchParams();
   formData.append('form-name', 'voice-studio-submission');
   formData.append('client-name', state.client_name);
-  formData.append('client-role', state.client_role);
   formData.append('client-email', state.client_email);
+  formData.append('client-business', state.client_business || '');
+  formData.append('client-what-you-do', state.client_what_you_do || '');
+  formData.append('client-who-you-serve', state.client_who_you_serve || '');
+  formData.append('client-how-long', state.client_how_long || '');
+  formData.append('client-one-thing', state.client_one_thing || '');
   formData.append('use-case', state.use_case);
   formData.append('voice-profile-markdown', profileMarkdown);
   formData.append('voice-profile', profileXML);
   formData.append('numbers', JSON.stringify(state.numbers));
+  formData.append('number-types', JSON.stringify(state.number_types));
+  formData.append('designed-intent', JSON.stringify(state.designed_intent));
   formData.append('bad-output-examples', state.bad_output_examples_checked.concat(state.custom_bad_examples).join('\n'));
   formData.append('personal-characteristics', JSON.stringify(state.personal_characteristics));
   formData.append('bot-field', '');
